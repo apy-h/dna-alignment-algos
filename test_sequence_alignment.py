@@ -1,38 +1,95 @@
+from abc import ABC, abstractmethod
 import unittest
-from sequence_alignment import GlobalAlignment
+from sequence_alignment import GlobalAlignment, LocalAlignment
 
-class TestGlobalAlignment(unittest.TestCase):
-    def test_same_length_sequences(self):
-        self.assertEqual(GlobalAlignment("TGGTG", "ATCGT").align, ("-TGGTG", "ATCGT-"))
-        self.assertEqual(GlobalAlignment("TCGTAGG", "CTCGTAT").align, ("-TCGTAGG", "CTCGTAT-"))
 
-    def test_different_length_sequences(self):
-        self.assertEqual(GlobalAlignment("ATCGT", "AT").align, ("ATCGT", "AT---"))
-        self.assertEqual(GlobalAlignment("ATCGTATCGT", "CGA").align, ("ATCGTATCGT", "--CG-A----"))
+class TestCase:
+   def __init__(self, input_seq, expected_global_output, expected_local_output):
+       self.input_seq = input_seq
+       self.expected_global_output = expected_global_output
+       self.expected_local_output = expected_local_output
 
-    def test_substring_sequences(self):
-        self.assertEqual(GlobalAlignment("ATCGT", "TCG").align, ("ATCGT", "-TCG-"))
-        self.assertEqual(GlobalAlignment("ATCGTATCGT", "TCGATCG").align, ("ATCGTATCGT", "-TCG-ATCG-"))
+#############################
 
-    def test_common_substring_sequences(self):
-        self.assertEqual(GlobalAlignment("ATCGT", "GTCGA").align, ("ATCGT", "GTCGA"))
-        self.assertEqual(GlobalAlignment("ATCGTATCGT", "ATCTTTCGTC").align, ("ATCGTATCGT-", "ATCTT-TCGTC"))
+class TestAlignment(ABC, unittest.TestCase):
+   SAME_LENGTH_SEQ_CASES = [
+       TestCase(("TGGTG", "ATCGT"), ("-TGGTG", "ATCGT-"), ("GT", "GT")),
+       TestCase(("TCGTAGG", "CTCGTAT"), ("-TCGTAGG", "CTCGTAT-"), ("TCGTA", "TCGTA")),
+       TestCase(("ATCGT", "GTCGA"), ("ATCGT", "GTCGA"), ("TCG", "TCG"))
+   ]
 
-    def test_different_sequences(self):
-        self.assertEqual(GlobalAlignment("AAAAA", "TTTTT").align, ("AAAAA", "TTTTT"))
-        self.assertEqual(GlobalAlignment("ATCGACC", "GCATCTA").align, ("--ATCGACC", "GCATCTA--"))
+   DIFF_LENGTH_SEQ_CASES = [
+       TestCase(("ATCGT", "AT"), ("ATCGT", "AT---"), ("AT", "AT")),
+       TestCase(("ATCGTATCGT", "CGA"), ("ATCGTATCGT", "--CG-A----"), ("CG", "CG")),
+       TestCase(("ATCGT", "TCG"), ("ATCGT", "-TCG-"), ("TCG", "TCG")),
+       TestCase(("ATCGTATCGT", "TCGATCG"), ("ATCGTATCGT", "-TCG-ATCG-"), ("TCGTATCG", "TCG-ATCG")),
+       TestCase(("ATCGTATCGT", "ATCTTTCGTC"), ("ATCGTATCGT-", "ATCTT-TCGTC"), ("ATCGTATCGT", "ATCTT-TCGT")),
+       TestCase(("ATCGACC", "GCATCTA"), ("--ATCGACC", "GCATCTA--"), ("ATC", "ATC")),
+       TestCase(("ACCTAAGG", "GGCTCAATCA"), ("ACCT-AAGG-", "GGCTCAATCA"), ("CT", "CT"))
+   ]
 
-    def test_identical_sequences(self):
-        self.assertEqual(GlobalAlignment("ATCGT", "ATCGT").align, ("ATCGT", "ATCGT"))
-        self.assertEqual(GlobalAlignment("ATCGTATCGT", "ATCGTATCGT").align, ("ATCGTATCGT", "ATCGTATCGT"))
+   EMPTY_SEQ_CASES = [
+       TestCase(("", "ATCGT"), ("-----", "ATCGT"), ("", "")),
+       TestCase(("", ""), ("", ""), ("", ""))
+   ]
 
-    def test_empty_and_nonempty_sequences(self):
-        self.assertEqual(GlobalAlignment("", "ATCGT").align, ("-----", "ATCGT"))
-        self.assertEqual(GlobalAlignment("", "ATCGTATCGT").align, ("----------", "ATCGTATCGT"))
 
-    def test_two_empty_sequences(self):
-        self.assertEqual(GlobalAlignment("", "").align, ("", ""))
+   def run_test_cases(self, test_cases, AlignmentClass):
+       for case in test_cases:
+           with self.subTest(case=case):
+               expected_output = case.expected_global_output if AlignmentClass == GlobalAlignment else case.expected_local_output
+               self.assertEqual(AlignmentClass(case.input_seq).align, expected_output)
 
+
+   @abstractmethod
+   def test_same_length_seq(self):
+       pass
+
+
+   @abstractmethod
+   def test_diff_length_seq(self):
+       pass
+
+
+   @abstractmethod
+   def test_empty_seq(self):
+       pass
+
+#############################
+
+# python3 -m unittest -v test_sequence_alignment.TestGlobalAlignment
+class TestGlobalAlignment(TestAlignment):
+   AlignmentClass = GlobalAlignment
+
+   def test_same_length_seq(self):
+       super().run_test_cases(self.SAME_LENGTH_SEQ_CASES, self.AlignmentClass)
+
+
+   def test_diff_length_seq(self):
+       super().run_test_cases(self.DIFF_LENGTH_SEQ_CASES, self.AlignmentClass)
+
+
+   def test_empty_seq(self):
+       super().run_test_cases(self.EMPTY_SEQ_CASES, self.AlignmentClass)
+
+#############################
+
+# python3 -m unittest -v test_sequence_alignment.TestLocalAlignment
+class TestLocalAlignment(TestAlignment):
+   AlignmentClass = LocalAlignment
+
+   def test_same_length_seq(self):
+       super().run_test_cases(self.SAME_LENGTH_SEQ_CASES, self.AlignmentClass)
+
+
+   def test_diff_length_seq(self):
+       super().run_test_cases(self.DIFF_LENGTH_SEQ_CASES, self.AlignmentClass)
+
+
+   def test_empty_seq(self):
+       super().run_test_cases(self.EMPTY_SEQ_CASES, self.AlignmentClass)
+
+#############################
 
 if __name__ == '__main__':
-    unittest.main()
+   unittest.main()

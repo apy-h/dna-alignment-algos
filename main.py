@@ -6,9 +6,10 @@ def main():
         len(sys.argv) != 3):
         raise SystemExit(f'Usage: {sys.argv[0]} [sequence 1] [sequence 2]')
     
-    seq1, seq2 = SequenceAlignment.validate_input(sys.argv[1], sys.argv[2])
-    ga = GlobalAlignment(seq1, seq2, 1, -1, -2)
-    print(ga.align)
+    seq = SequenceAlignment.validate_input(sys.argv[1], sys.argv[2])
+    
+    ga = GlobalAlignment(seq)
+    la = LocalAlignment(seq)
 
 
 if __name__ == '__main__':
