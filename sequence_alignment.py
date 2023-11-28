@@ -92,7 +92,7 @@ class SequenceAlignment(ABC):
     @staticmethod
     def validate_input(seq1, seq2):
         if not (SequenceAlignment._is_valid_dna(seq1) and SequenceAlignment._is_valid_dna(seq2)):
-            raise SystemExit('One or both sequences are invalid (contain characters other than A, C, G, and T.)')
+            raise SystemExit('Error: One or both sequences are invalid (contain characters other than A, C, G, and T.)')
         
         return seq1.upper(), seq2.upper()
 
