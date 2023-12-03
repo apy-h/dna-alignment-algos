@@ -87,15 +87,34 @@ class SequenceAlignment(ABC):
         pass
 
 
-    # Return seq1 and seq2 (uppercased) if both only contain A, C, G, and T
-    # Raise exception otherwise
+    # Return list of valid sequences (uppercased) from list of inputted sequences
+    # Filter out invalid sequences and raise exception if less than 2 valid sequences
     @staticmethod
-    def validate_input(seq1, seq2):
-        if not (SequenceAlignment._is_valid_dna(seq1) and SequenceAlignment._is_valid_dna(seq2)):
-            raise SystemExit('Error: One or both sequences are invalid (contain characters other than A, C, G, and T.)')
-        
-        return seq1.upper(), seq2.upper()
+    def validate_input(seqs):
+        valid_seqs = []
+        invalid_seqs = []
 
+        for seq in seqs:
+            if SequenceAlignment._is_valid_dna(seq):
+                valid_seqs.append(seq.upper())
+            else:
+                invalid_seqs.append(seq)
+
+        if len(valid_seqs) < 2:
+            raise SystemExit('Error: At least two valid DNA sequences are required')
+
+        # Print invalid sequences
+        if invalid_seqs:
+            print('The following sequences are not valid DNA sequences and will not be used:')
+            for seq in invalid_seqs:
+                print(f'\t{seq}')
+
+        # Print valid sequences
+        print('The following sequences are valid DNA sequences and will be used:')
+        for seq in valid_seqs:
+            print(f'\t{seq}')
+            
+        return valid_seqs
 
     # Return true if seq only contains the letters A, C, G, and T
     # Return false otherwise

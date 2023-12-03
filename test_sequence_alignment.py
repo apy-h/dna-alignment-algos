@@ -12,47 +12,46 @@ class TestCase:
 #############################
 
 class TestAlignment(ABC, unittest.TestCase):
-   SAME_LENGTH_SEQ_CASES = [
-       TestCase(("TGGTG", "ATCGT"), ("-TGGTG", "ATCGT-"), ("GT", "GT")),
-       TestCase(("TCGTAGG", "CTCGTAT"), ("-TCGTAGG", "CTCGTAT-"), ("TCGTA", "TCGTA")),
-       TestCase(("ATCGT", "GTCGA"), ("ATCGT", "GTCGA"), ("TCG", "TCG"))
-   ]
+    SAME_LENGTH_SEQ_CASES = [
+        TestCase(('TGGTG', 'ATCGT'), ('-TGGTG', 'ATCGT-'), ('GT', 'GT')),
+        TestCase(('TCGTAGG', 'CTCGTAT'), ('-TCGTAGG', 'CTCGTAT-'), ('TCGTA', 'TCGTA')),
+        TestCase(('ATCGT', 'GTCGA'), ('ATCGT', 'GTCGA'), ('TCG', 'TCG'))
+    ]
 
-   DIFF_LENGTH_SEQ_CASES = [
-       TestCase(("ATCGT", "AT"), ("ATCGT", "AT---"), ("AT", "AT")),
-       TestCase(("ATCGTATCGT", "CGA"), ("ATCGTATCGT", "--CG-A----"), ("CG", "CG")),
-       TestCase(("ATCGT", "TCG"), ("ATCGT", "-TCG-"), ("TCG", "TCG")),
-       TestCase(("ATCGTATCGT", "TCGATCG"), ("ATCGTATCGT", "-TCG-ATCG-"), ("TCGTATCG", "TCG-ATCG")),
-       TestCase(("ATCGTATCGT", "ATCTTTCGTC"), ("ATCGTATCGT-", "ATCTT-TCGTC"), ("ATCGTATCGT", "ATCTT-TCGT")),
-       TestCase(("ATCGACC", "GCATCTA"), ("--ATCGACC", "GCATCTA--"), ("ATC", "ATC")),
-       TestCase(("ACCTAAGG", "GGCTCAATCA"), ("ACCT-AAGG-", "GGCTCAATCA"), ("CT", "CT"))
-   ]
+    DIFF_LENGTH_SEQ_CASES = [
+        TestCase(('ATCGT', 'AT'), ('ATCGT', 'AT---'), ('AT', 'AT')),
+        TestCase(('ATCGTATCGT', 'CGA'), ('ATCGTATCGT', '--CG-A----'), ('CG', 'CG')),
+        TestCase(('ATCGT', 'TCG'), ('ATCGT', '-TCG-'), ('TCG', 'TCG')),
+        TestCase(('ATCGTATCGT', 'TCGATCG'), ('ATCGTATCGT', '-TCG-ATCG-'), ('TCGTATCG', 'TCG-ATCG')),
+        TestCase(('ATCGTATCGT', 'ATCTTTCGTC'), ('ATCGTATCGT-', 'ATCTT-TCGTC'), ('ATCGTATCGT', 'ATCTT-TCGT')),
+        TestCase(('ATCGACC', 'GCATCTA'), ('--ATCGACC', 'GCATCTA--'), ('ATC', 'ATC')),
+        TestCase(('ACCTAAGG', 'GGCTCAATCA'), ('ACCT-AAGG-', 'GGCTCAATCA'), ('CT', 'CT'))
+    ]
 
-   EMPTY_SEQ_CASES = [
-       TestCase(("", "ATCGT"), ("-----", "ATCGT"), ("", "")),
-       TestCase(("", ""), ("", ""), ("", ""))
-   ]
+    EMPTY_SEQ_CASES = [
+        TestCase(('', 'ATCGT'), ('-----', 'ATCGT'), ('', '')),
+        TestCase(('', ''), ('', ''), ('', ''))
+    ]
 
-
-   def run_test_cases(self, test_cases, AlignmentClass):
+    def run_test_cases(self, test_cases, AlignmentClass):
        for case in test_cases:
            with self.subTest(case=case):
                expected_output = case.expected_global_output if AlignmentClass == GlobalAlignment else case.expected_local_output
                self.assertEqual(AlignmentClass(case.input_seq).align, expected_output)
 
 
-   @abstractmethod
-   def test_same_length_seq(self):
+    @abstractmethod
+    def test_same_length_seq(self):
        pass
 
 
-   @abstractmethod
-   def test_diff_length_seq(self):
+    @abstractmethod
+    def test_diff_length_seq(self):
        pass
 
 
-   @abstractmethod
-   def test_empty_seq(self):
+    @abstractmethod
+    def test_empty_seq(self):
        pass
 
 #############################
