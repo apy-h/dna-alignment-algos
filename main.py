@@ -10,10 +10,7 @@ def main():
     seqs = cli_input()
     print_line('*')
 
-    # Connect to SQLite database
-    conn = connect('results.db')
-    c = conn.cursor()
-    create_results_table(c)
+    conn, c = open_database()
 
     num_seqs = len(seqs)
     num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2)
@@ -24,8 +21,7 @@ def main():
 
     get_results(seqs, c, True)
 
-    conn.commit()
-    conn.close()
+    close_database(conn)
 
     # # Save results to CSV file
     # with open('results.csv', 'w', newline='') as file:
@@ -35,7 +31,7 @@ def main():
 
 # Save alignment results from all combinations of sequences to database
 # (And print them if program is being run as CLI tool)
-def get_results(seqs, c, cli):
+def get_results(seqs, c, cli=False):
     for seq1, seq2 in combinations(seqs, 2):
         ga = GlobalAlignment((seq1, seq2))
         la = LocalAlignment((seq1, seq2))
@@ -61,7 +57,7 @@ def cli_input():
             usage_help()
         elif os.path.isfile(sys.argv[1]) and os.path.splitext(sys.argv[1])[1].lower() == '.csv': # Valid CSV file input (should have each sequence on a new line)
             with open(sys.argv[1], 'r') as file:
-                seqs = [row[0].strip() for row in reader(file)]
+                seqs = read_csv(file)
         else: # Invalid CSV file input
             raise SystemExit(f'Error: {sys.argv[1]} is not a valid CSV file')
     elif len(sys.argv) == 1: # Execution-time inputs
@@ -73,7 +69,7 @@ def cli_input():
     else: # Help
         usage_help()
 
-    return SequenceAlignment.validate_input(seqs)
+    return SequenceAlignment.validate_input(seqs, True)
 
 
 def create_results_table(c):
@@ -87,7 +83,7 @@ def create_results_table(c):
             LocalAlignment1 TEXT,
             LocalAlignment2 TEXT,
             LocalAlignmentScore INTEGER,
-              Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
@@ -97,6 +93,21 @@ def usage_help():
           f'{sys.argv[0]} filename.csv         # CSV file input\n'
           f'{sys.argv[0]}                      # Interactive inputs')
 
+
+def open_database():
+    conn = connect('results.db')
+    c = conn.cursor()
+    create_results_table(c)
+    return conn, c
+
+
+def close_database(conn):
+    conn.commit()
+    conn.close()
+
+
+def read_csv(file):
+    return [row[0].strip() for row in reader(file)]
 
 def print_line(c):
     print('\n' + c * 50 + '\n')

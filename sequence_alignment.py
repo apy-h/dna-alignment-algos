@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from flask import jsonify
 import numpy as np
 
 #############################
@@ -90,7 +91,7 @@ class SequenceAlignment(ABC):
     # Return list of valid sequences (uppercased) from list of inputted sequences
     # Filter out invalid sequences and raise exception if less than 2 valid sequences
     @staticmethod
-    def validate_input(seqs):
+    def validate_input(seqs, cli=False):
         valid_seqs = []
         invalid_seqs = []
 
@@ -100,20 +101,29 @@ class SequenceAlignment(ABC):
             else:
                 invalid_seqs.append(seq)
 
+        print(valid_seqs)
+        print(invalid_seqs)
+
         if len(valid_seqs) < 2:
-            raise SystemExit('Error: At least two valid DNA sequences are required')
+            if cli:
+                raise SystemExit('Error: At least two valid DNA sequences are required')
+            else:
+                response = jsonify({'error': 'At least two valid DNA sequences are required'})
+                response.status_code = 400
+                return response
 
-        # Print invalid sequences
-        if invalid_seqs:
-            print('The following sequences are not valid DNA sequences and will not be used:')
-            for seq in invalid_seqs:
+        if cli:
+            # Print invalid sequences
+            if invalid_seqs:
+                print('The following sequences are not valid DNA sequences and will not be used:')
+                for seq in invalid_seqs:
+                    print(f'\t{seq}')
+                print()
+
+            # Print valid sequences
+            print('The following sequences are valid DNA sequences and will be used:')
+            for seq in valid_seqs:
                 print(f'\t{seq}')
-            print()
-
-        # Print valid sequences
-        print('The following sequences are valid DNA sequences and will be used:')
-        for seq in valid_seqs:
-            print(f'\t{seq}')
             
         return valid_seqs
 

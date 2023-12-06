@@ -7,35 +7,28 @@ $(document).ready(function() {
 
     hideInputs();
 
-    // Show appropriate input fields when radio button is selected
+    // Show appropriate input field (manual or CSV) when radio button is selected
     $('input[type=radio][name=input_type]').change(function() {
         hideInputs();
         $('#' + this.value + '-input').show();
     });
 
-    // Validate input fields before submitting form
-    $('#sequence-form').submit(function(event) {
-        var isValid = false;
+    // Validate input field (manual or CSV) before enabling user to submit form
+    $('#manual-input, #csv-input').on('input change', function() {
+        $('#submit').hide();
 
         if ($('#manual').is(':checked')) {
-            // Combine sequences across lines to check if all are valid at once
-            if (SequenceAlignment.is_valid_dna($('#manual-input').val().replace('\n', ''))) {
-                isValid = true;
+            // Combine sequences across lines to check if all are valid (contain only A, C, G, or T) at once
+            if (/^[ACGT]*$/i.test($('#manual-input').val().replace('\n', ''))) {
+                $('#submit').show();
             }
         }
 
         if ($('#csv').is(':checked')) {
             var file = $('#csv-input').get(0).files[0];
             if ($('#csv-input').get(0).files[0].type == 'text/csv') {
-                isValid = true;
+                $('#submit').show();
             }
-        }
-
-        if (isValid) {
-            $('#submit').show();
-            event.preventDefault();
-        } else {
-            event.preventDefault();
         }
     });
 });

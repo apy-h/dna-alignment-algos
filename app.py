@@ -1,32 +1,30 @@
 from flask import Flask, render_template, request
-import csv
-import sqlite3
-from sequence_alignment import GlobalAlignment, LocalAlignment, SequenceAlignment
+import main
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        # Get form data
+        # Get and validate user input
         input_type = request.form.get('input_type')
-        sequences = request.form.get('sequences')
+        if input_type == 'manual':
+            seqs = request.form.get('sequences').split('\n')
+        else:
+            print('0' * 100)
+            print(request.files.get('csv'))
 
-        # Validate sequences
-        if input_type == 'individual':
-            sequences = sequences.split('\n')
-            for seq in sequences:
-                if not SequenceAlignment.is_valid_dna(seq):
-                    return 'Invalid DNA sequence', 400
-        elif input_type == 'csv':
-            # Validate CSV file
-            pass
+            seqs = main.read_csv(request.files.get('csv'))
+        seqs = main.SequenceAlignment.validate_input(seqs)
+
+        conn, c = main.open_database()
+
+        main.get_results(seqs, c)
+        
+        rows = c.execute("SELECT * FROM results ORDER BY Timestamp DESC").fetchall()
+
+        print(rows)
     
-    # Fetch data from the database
-    # conn = sqlite3.connect('results.db')
-    # c = conn.cursor()
-    # c.execute("SELECT * FROM results ORDER BY GlobalAlignmentScore DESC")
-    # rows = c.fetchall()
-    # conn.close()
+        main.close_database(conn)
 
     return render_template('home.html') # , rows=None)
