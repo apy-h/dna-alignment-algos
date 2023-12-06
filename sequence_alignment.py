@@ -108,6 +108,7 @@ class SequenceAlignment(ABC):
             print('The following sequences are not valid DNA sequences and will not be used:')
             for seq in invalid_seqs:
                 print(f'\t{seq}')
+            print()
 
         # Print valid sequences
         print('The following sequences are valid DNA sequences and will be used:')
