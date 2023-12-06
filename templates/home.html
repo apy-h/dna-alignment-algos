@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sequence Alignment</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="validate.js"></script>
+</head>
+<body>
+    <h1>Sequence Alignment</h1>
+    <p>Enter your DNA sequences to perform sequence alignment.</p>
+
+    <form id="sequence-form" method="post">
+        <input type="radio" id="individual" name="input_type" value="individual">
+        <label for="individual">Input individually</label><br>
+        <div id="individual-inputs">
+            <input type="text" name="sequence1" placeholder="Enter DNA sequence">
+            <input type="text" name="sequence2" placeholder="Enter DNA sequence">
+            <!-- Additional input fields would be added here -->
+        </div>
+
+        <input type="radio" id="copy-paste" name="input_type" value="copy-paste">
+        <label for="copy-paste">Copy and paste</label><br>
+        <textarea id="copy-paste-input" name="sequences"></textarea>
+
+        <input type="radio" id="csv" name="input_type" value="csv">
+        <label for="csv">Upload CSV</label><br>
+        <input type="file" id="csv-input" name="csv">
+
+        <input type="submit" id="submit" value="Submit">
+    </form>
+
+    <div id="results"></div>
+    <table id="database"></table>
+</body>
+</html>

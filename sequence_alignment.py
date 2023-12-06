@@ -95,7 +95,7 @@ class SequenceAlignment(ABC):
         invalid_seqs = []
 
         for seq in seqs:
-            if SequenceAlignment._is_valid_dna(seq):
+            if SequenceAlignment.is_valid_dna(seq):
                 valid_seqs.append(seq.upper())
             else:
                 invalid_seqs.append(seq)
@@ -120,7 +120,7 @@ class SequenceAlignment(ABC):
     # Return true if seq only contains the letters A, C, G, and T
     # Return false otherwise
     @staticmethod
-    def _is_valid_dna(seq):
+    def is_valid_dna(seq):
         return set(seq.upper()).issubset('ACGT')
 
     
