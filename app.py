@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import csv
 import sqlite3
-# import your sequence alignment module
+from sequence_alignment import GlobalAlignment, LocalAlignment, SequenceAlignment
 
 app = Flask(__name__)
 
@@ -21,30 +21,12 @@ def home():
         elif input_type == 'csv':
             # Validate CSV file
             pass
+    
+    # Fetch data from the database
+    # conn = sqlite3.connect('results.db')
+    # c = conn.cursor()
+    # c.execute("SELECT * FROM results ORDER BY GlobalAlignmentScore DESC")
+    # rows = c.fetchall()
+    # conn.close()
 
-        # Perform alignment algorithms
-        # ...
-
-        # Render results
-        return render_template('results.html', results=results)
-    else:
-        return render_template('home.html')
-
-@app.route('/database')
-def database():
-    # Connect to SQLite database
-    conn = sqlite3.connect('results.db')
-    c = conn.cursor()
-
-    # Query database
-    c.execute('SELECT * FROM results')
-    data = c.fetchall()
-
-    # Close connection
-    conn.close()
-
-    # Render data as table
-    return render_template('database.html', data=data)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return render_template('home.html') # , rows=None)

@@ -7,26 +7,13 @@ import sys
 from sequence_alignment import GlobalAlignment, LocalAlignment, SequenceAlignment
 
 def main():
-    seqs = user_input()
+    seqs = cli_input()
     print_line('*')
 
     # Connect to SQLite database
     conn = connect('results.db')
     c = conn.cursor()
-
-    # Create table if it doesn't exist
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS results (
-            Sequence1 TEXT,
-            Sequence2 TEXT,
-            GlobalAlignment1 TEXT,
-            GlobalAlignment2 TEXT,
-            GlobalAlignmentScore INTEGER,
-            LocalAlignment1 TEXT,
-            LocalAlignment2 TEXT,
-            LocalAlignmentScore INTEGER
-        )
-    ''')
+    create_results_table(c)
 
     num_seqs = len(seqs)
     num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2)
@@ -35,22 +22,7 @@ def main():
     print(f'Number of combinations: {num_combinations}')
     print_line('*')
 
-    # Get results from all combinations of sequences
-    for seq1, seq2 in combinations(seqs, 2):
-        ga = GlobalAlignment((seq1, seq2))
-        la = LocalAlignment((seq1, seq2))
-
-        ga_align1, ga_align2 = ga.align
-        la_align1, la_align2 = la.align
-
-        # Print results
-        print(f'Sequence 1: {seq1}\nSequence 2: {seq2}\n')
-        print(f'Global Alignment:\n\t{ga_align1}\n\t{ga_align2}\n\tAlignment Score: {ga.alignment_score}\n')
-        print(f'Local Alignment:\n\t{la_align1}\n\t{la_align2}\n\tAlignment Score: {la.alignment_score}')
-        print_line('-')
-
-        # Add results to database
-        c.execute('INSERT INTO results VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, ga.alignment_score))
+    get_results(seqs, c, True)
 
     conn.commit()
     conn.close()
@@ -61,8 +33,26 @@ def main():
     #     w.writerow(['Sequence1', 'Sequence1', 'GlobalAlignment1', 'GlobalAlignment2', 'GlobalAlignmentScore', 'LocalAlignment1', 'LocalAlignment2', 'LocalAlignmentScore'])
     #     w.writerows(results)
 
+# Save alignment results from all combinations of sequences to database
+# (And print them if program is being run as CLI tool)
+def get_results(seqs, c, cli):
+    for seq1, seq2 in combinations(seqs, 2):
+        ga = GlobalAlignment((seq1, seq2))
+        la = LocalAlignment((seq1, seq2))
 
-def user_input():
+        ga_align1, ga_align2 = ga.align
+        la_align1, la_align2 = la.align
+
+        c.execute('INSERT INTO results VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, ga.alignment_score))
+
+        if cli:
+            print(f'Sequence 1: {seq1}\nSequence 2: {seq2}\n')
+            print(f'Global Alignment:\n\t{ga_align1}\n\t{ga_align2}\n\tAlignment Score: {ga.alignment_score}\n')
+            print(f'Local Alignment:\n\t{la_align1}\n\t{la_align2}\n\tAlignment Score: {la.alignment_score}')
+            print_line('-')
+
+
+def cli_input():
     seqs = None
     if len(sys.argv) >= 3: # Command-line inputs
         seqs = sys.argv[1:]
@@ -85,6 +75,21 @@ def user_input():
 
     return SequenceAlignment.validate_input(seqs)
 
+
+def create_results_table(c):
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            Sequence1 TEXT,
+            Sequence2 TEXT,
+            GlobalAlignment1 TEXT,
+            GlobalAlignment2 TEXT,
+            GlobalAlignmentScore INTEGER,
+            LocalAlignment1 TEXT,
+            LocalAlignment2 TEXT,
+            LocalAlignmentScore INTEGER,
+              Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
 
 def usage_help():
     raise SystemExit(f'Usage:\n'

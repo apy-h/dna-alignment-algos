@@ -1,76 +1,41 @@
 $(document).ready(function() {
-    // Hide all input fields initially
-    $('#individual-inputs').hide();
-    $('#copy-paste-input').hide();
-    $('#csv-input').hide();
-    $('#submit').hide();
+    function hideInputs() {
+        $('#manual-input').hide();
+        $('#csv-input').hide();
+        $('#submit').hide();
+    }
+
+    hideInputs();
 
     // Show appropriate input fields when radio button is selected
     $('input[type=radio][name=input_type]').change(function() {
-        $('#individual-inputs').hide();
-        $('#copy-paste-input').hide();
-        $('#csv-input').hide();
-        $('#submit').hide();
-
-        if (this.value == 'individual') {
-            $('#individual-inputs').show();
-        } else if (this.value == 'copy-paste') {
-            $('#copy-paste-input').show();
-        } else if (this.value == 'csv') {
-            $('#csv-input').show();
-        }
-    });
-
-    // Add new input field when previous ones are filled
-    $('#individual-inputs').on('input', 'input', function() {
-        var allFilled = true;
-        $('#individual-inputs input').each(function() {
-            if ($(this).val() == '') {
-                allFilled = false;
-                return false;  // Break out of each loop
-            }
-        });
-
-        if (allFilled) {
-            $('#individual-inputs').append('<input type="text" name="sequence" placeholder="Enter DNA sequence">');
-        }
+        hideInputs();
+        $('#' + this.value + '-input').show();
     });
 
     // Validate input fields before submitting form
     $('#sequence-form').submit(function(event) {
-        var isValid = true;
+        var isValid = false;
 
-        // Validate individual inputs
-        $('#individual-inputs input').each(function() {
-            if (!SequenceAlignment.is_valid_dna($(this).val())) {
-                isValid = false;
-                return false;  // Break out of each loop
-            }
-        });
-
-        // Validate copy-paste input
-        if (isValid && $('#copy-paste').is(':checked')) {
-            var sequences = $('#copy-paste-input').val().split('\n');
-            for (var i = 0; i < sequences.length; i++) {
-                if (!SequenceAlignment.is_valid_dna(sequences[i])) {
-                    isValid = false;
-                    break;
-                }
+        if ($('#manual').is(':checked')) {
+            // Combine sequences across lines to check if all are valid at once
+            if (SequenceAlignment.is_valid_dna($('#manual-input').val().replace('\n', ''))) {
+                isValid = true;
             }
         }
 
-        // Validate CSV input
-        if (isValid && $('#csv').is(':checked')) {
+        if ($('#csv').is(':checked')) {
             var file = $('#csv-input').get(0).files[0];
-            if (file.type != 'text/csv') {
-                isValid = false;
+            if ($('#csv-input').get(0).files[0].type == 'text/csv') {
+                isValid = true;
             }
         }
 
-        if (!isValid) {
+        if (isValid) {
+            $('#submit').show();
             event.preventDefault();
         } else {
-            $('#submit').show();
+            event.preventDefault();
         }
     });
 });
