@@ -1,10 +1,68 @@
 from csv import reader, writer
 from itertools import combinations
+from math import factorial
 import os
+from sqlite3 import connect
 import sys
 from sequence_alignment import GlobalAlignment, LocalAlignment, SequenceAlignment
 
 def main():
+    seqs = user_input()
+    print_line('*')
+
+    # Connect to SQLite database
+    conn = connect('results.db')
+    c = conn.cursor()
+
+    # Create table if it doesn't exist
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            Sequence1 TEXT,
+            Sequence2 TEXT,
+            GlobalAlignment1 TEXT,
+            GlobalAlignment2 TEXT,
+            GlobalAlignmentScore INTEGER,
+            LocalAlignment1 TEXT,
+            LocalAlignment2 TEXT,
+            LocalAlignmentScore INTEGER
+        )
+    ''')
+
+    num_seqs = len(seqs)
+    num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2)
+    
+    print(f'Number of sequences: {num_seqs}')
+    print(f'Number of combinations: {num_combinations}')
+    print_line('*')
+
+    # Get results from all combinations of sequences
+    for seq1, seq2 in combinations(seqs, 2):
+        ga = GlobalAlignment((seq1, seq2))
+        la = LocalAlignment((seq1, seq2))
+
+        ga_align1, ga_align2 = ga.align
+        la_align1, la_align2 = la.align
+
+        # Print results
+        print(f'Sequence 1: {seq1}\nSequence 2: {seq2}\n')
+        print(f'Global Alignment:\n\t{ga_align1}\n\t{ga_align2}\n\tAlignment Score: {ga.alignment_score}\n')
+        print(f'Local Alignment:\n\t{la_align1}\n\t{la_align2}\n\tAlignment Score: {la.alignment_score}')
+        print_line('-')
+
+        # Add results to database
+        c.execute('INSERT INTO results VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, ga.alignment_score))
+
+    conn.commit()
+    conn.close()
+
+    # # Save results to CSV file
+    # with open('results.csv', 'w', newline='') as file:
+    #     w = writer(file)
+    #     w.writerow(['Sequence1', 'Sequence1', 'GlobalAlignment1', 'GlobalAlignment2', 'GlobalAlignmentScore', 'LocalAlignment1', 'LocalAlignment2', 'LocalAlignmentScore'])
+    #     w.writerows(results)
+
+
+def user_input():
     seqs = None
     if len(sys.argv) >= 3: # Command-line inputs
         seqs = sys.argv[1:]
@@ -25,41 +83,7 @@ def main():
     else: # Help
         usage_help()
 
-    seqs = SequenceAlignment.validate_input(seqs)
-
-    print_line('*')
-
-    results = [] # List of tuples (seq1, seq2, ga_align1, ga_align2, ga_alignment_score, la_align1, la_align2, la_alignment_score)
-    num_combinations = 0
-    
-    # Generate all combinations of sequences
-    for seq1, seq2 in combinations(seqs, 2):
-        num_combinations += 1
-
-        ga = GlobalAlignment((seq1, seq2))
-        la = LocalAlignment((seq1, seq2))
-
-        ga_align1, ga_align2 = ga.align
-        la_align1, la_align2 = la.align
-
-        results.append((seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, ga.alignment_score))
-    
-    # Print results
-    print(f'Number of sequences: {len(seqs)}')
-    print(f'Number of combinations: {num_combinations}')
-    print_line('*')
-
-    for result in results:
-        print(f'Sequence 1: {result[0]}\nSequence 2: {result[1]}\n')
-        print(f'Global Alignment:\n\t{result[2]}\n\t{result[3]}\n\tAlignment Score: {result[4]}\n')
-        print(f'Local Alignment:\n\t{result[5]}\n\t{result[6]}\n\tAlignment Score: {result[7]}')
-        print_line('-')
-
-    # Save results to CSV file
-    with open('results.csv', 'w', newline='') as file:
-        w = writer(file)
-        w.writerow(['Sequence1', 'Sequence1', 'GlobalAlignment1', 'GlobalAlignment2', 'GlobalAlignmentScore', 'LocalAlignment1', 'LocalAlignment2', 'LocalAlignmentScore'])
-        w.writerows(results)
+    return SequenceAlignment.validate_input(seqs)
 
 
 def usage_help():
@@ -68,8 +92,10 @@ def usage_help():
           f'{sys.argv[0]} filename.csv         # CSV file input\n'
           f'{sys.argv[0]}                      # Interactive inputs')
 
+
 def print_line(c):
     print('\n' + c * 50 + '\n')
+    
 
 if __name__ == '__main__':
     main()
