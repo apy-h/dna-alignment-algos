@@ -13,12 +13,12 @@
 
     <body>
         <h1>Sequence Alignment</h1>
-        <h3>Enter your DNA sequences to perform global and local sequence alignment.</h3>
+        <h5>Enter your DNA sequences to perform global and local sequence alignment.</h5>
 
         <div id="loading" style="display: none;">
             <div id="loading-content">
                 <img src="{{ url_for('static', filename='favicon.png') }}" id="loading-spinner">
-                <p id="timer">0 seconds</p>
+                <h6 id="timer">0 seconds</h6>
             </div>
         </div>
 
@@ -33,16 +33,18 @@
         </form>
 
         {% if rows %}
+            <a href="{{ url_for('download_results') }}" id="download-button" class="btn">Download Results</a>
             <table>
                 <tr>
                     <th>Sequence 1</th>
                     <th>Sequence 2</th>
                     <th>Global Alignment 1</th>
                     <th>Global Alignment 2</th>
-                    <th>Global Alignment Score</th>
+                    <th>Global Score</th>
                     <th>Local Alignment 1</th>
                     <th>Local Alignment 2</th>
-                    <th>Local Alignment Score</th>
+                    <th>Local Score</th>
+                    <th>Timestamp</th>
                 </tr>
                 {% for row in rows %}
                 <tr>

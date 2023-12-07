@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 import main
 
 
@@ -22,11 +22,18 @@ def home():
         main.get_results(seqs, c)
 
     # Get all rows from database
-    rows = c.execute("SELECT seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score FROM results ORDER BY time DESC").fetchall()
+    rows = c.execute("SELECT * FROM results ORDER BY time DESC").fetchall()
 
     main.close_database(conn)
 
     return render_template('home.html', rows=rows)
+
+
+# Download database of results
+@app.route('/download')
+def download_results():
+    return send_file('results.db', as_attachment=True)
+
 
 # Return list representation of string split by newlines (and \r\n for compatibility)
 def split_by_line(str):
