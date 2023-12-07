@@ -13,7 +13,7 @@ h1 {
     color: black;
 }
 
-p {
+h3 {
     color: darkslategrey;
 }
 
@@ -84,4 +84,42 @@ td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(211, 211, 211, 0.5); /* lightgrey with 50% opacity */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loading-content {
+    background-color: lightgrey;
+    padding: 20px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#loading-spinner {
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+#timer {
+    font-size: 20px;
+    margin-top: 20px;
 }

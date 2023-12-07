@@ -13,15 +13,22 @@
 
     <body>
         <h1>Sequence Alignment</h1>
-        <p>Enter your DNA sequences to perform global and local sequence alignment.</p>
+        <h3>Enter your DNA sequences to perform global and local sequence alignment.</h3>
+
+        <div id="loading" style="display: none;">
+            <div id="loading-content">
+                <img src="{{ url_for('static', filename='favicon.png') }}" id="loading-spinner">
+                <p id="timer">0 seconds</p>
+            </div>
+        </div>
 
         <form id="sequence-form" method="post" enctype="multipart/form-data">
             <input type="radio" id="manual" name="input_type" value="manual">
             <label for="manual">Manual Input</label><br>
-            <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences seperated by newlines"></textarea>
+            <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences seperated by newlines"></textarea><br>
             <input type="radio" id="csv" name="input_type" value="csv">
             <label for="csv">Upload CSV</label><br>
-            <input type="file" id="csv-input" name="csv">
+            <input type="file" id="csv-input" name="csv"><br>
             <input type="submit" id="submit" value="Submit">
         </form>
 

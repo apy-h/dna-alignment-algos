@@ -38,6 +38,22 @@ $(document).ready(function() {
         }
     });
 
+    var startTime;
+
+    // Show the loading spinner and start the timer when user presses submit
+    $('#submit').click(function() {
+        // Show the loading spinner and start the timer
+        $('#loading').show();
+        $('#loading-spinner').css('animation', 'spin 2s linear infinite');
+        startTime = Date.now();
+        setInterval(updateTimer, 100); // Update every 100 milliseconds
+    });
+    
+    function updateTimer() {
+        var elapsedSeconds = (Date.now() - startTime) / 1000;
+        $('#timer').text(elapsedSeconds.toFixed(1) + ' seconds'); // Display 1 decimal place
+    }
+
     function hideInputs() {
         $('#manual-input').hide();
         $('#csv-input').hide();
