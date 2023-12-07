@@ -14,10 +14,15 @@
     <body>
         <h1>Sequence Alignment</h1>
         <h5>Enter your DNA sequences to perform global and local sequence alignment.</h5>
+        <br>
+
+        <!-- Show error message if less than 2 valid DNA sequences submitted -->
         {% if error %}
-            <p style="color: red;">{{ error }}</p>
+            <p style="color: darkred;">{{ error }}</p>
         {% endif %}
 
+        <!-- Loading screen overlay with image of spinning DNA and timer -->
+        <!-- Hide until dynamically shown (by pressing submit button) -->
         <div id="loading" style="display: none;">
             <div id="loading-content">
                 <img src="{{ url_for('static', filename='favicon.png') }}" id="loading-spinner">
@@ -25,22 +30,33 @@
             </div>
         </div>
 
+        <!-- Form for submitting DNA sequences -->
         <form id="sequence-form" method="post" enctype="multipart/form-data">
+            <!-- Manual Input: type into multi-line input box -->
             <input type="radio" id="manual" name="input_type" value="manual">
             <label for="manual">Manual Input</label><br>
             <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences seperated by newlines"></textarea><br>
+
+            <!-- Upload CSV -->
             <input type="radio" id="csv" name="input_type" value="csv">
             <label for="csv">Upload CSV</label><br>
             <input type="file" id="csv-input" name="csv"><br>
+
+            <!-- Submit Button -->
             <input type="submit" id="submit" value="Submit">
         </form>
 
+        <!-- Table representation of results.db -->
         {% if rows %}
+            <!-- Button to download results.db -->
             <a href="{{ url_for('download_results') }}" id="download-button" class="btn">Download Results</a>
+
+            
             <button onclick="window.location.href = '/?sort_column=ga_score&sort_order=ASC'">Sort by Global Score Ascending</button>
             <button onclick="window.location.href = '/?sort_column=ga_score&sort_order=DESC'">Sort by Global Score Descending</button>
             <button onclick="window.location.href = '/?sort_column=la_score&sort_order=ASC'">Sort by Local Score Ascending</button>
             <button onclick="window.location.href = '/?sort_column=la_score&sort_order=DESC'">Sort by Local Score Descending</button>
+
             <table>
                 <tr>
                     <th>Sequence 1</th>

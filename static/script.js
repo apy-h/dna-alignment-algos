@@ -21,16 +21,15 @@ $(document).ready(function() {
     $('input[type=radio][name=input_type], #manual-input, #csv-input').on('input change', function() {
         $('#submit').hide();
     
-        // Combine sequences across lines to check if all are valid (contain only A, C, G, or T) at once for manual input field
+        // Combine sequences across lines to check if all are valid (not empty and contains only A, C, G, and T) at once for manual input field
         if ($('#manual').is(':checked')) {
             var seqs = $('#manual-input').val()
             if (seqs && /^[ACGT]*$/i.test(seqs.replace(/\n/g, ''))) {
                 $('#submit').show();
             }
-        }
-
+        } 
         // Check if CSV file is valid for CSV input field
-        if ($('#csv').is(':checked')) {
+        else if ($('#csv').is(':checked')) { 
             var file = $('#csv-input').get(0).files[0];
             if (file && $('#csv-input').get(0).files[0].type == 'text/csv') {
                 $('#submit').show();
@@ -42,11 +41,10 @@ $(document).ready(function() {
 
     // Show the loading spinner and start the timer when user presses submit
     $('#submit').click(function() {
-        // Show the loading spinner and start the timer
         $('#loading').show();
         $('#loading-spinner').css('animation', 'spin 2s linear infinite');
         startTime = Date.now();
-        setInterval(updateTimer, 100); // Update every 100 milliseconds
+        setInterval(updateTimer, 100); // Update every 0.1 seconds
     });
     
     function updateTimer() {
