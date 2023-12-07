@@ -7,7 +7,9 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     conn, c = main.open_database()
+    error = None
 
+    # Get URL parameters for sorting table of results
     sort_column = request.args.get('sort_column', default='time', type=str)
     sort_order = request.args.get('sort_order', default='DESC', type=str)
 
@@ -19,20 +21,21 @@ def home():
             seqs = request.form.get('sequences')
         else:
             seqs = request.files.get('csv').read().decode()
+        
         seqs = main.SequenceAlignment.validate_input(split_by_line(seqs.replace(' ', '')))
         
+        # If invalid input (less than 2 valid sequences), display error message
         if isinstance(seqs, Response) and seqs.status_code == 400:
-            return render_template('home.html', error=seqs.json['error'])
-
-        # Add results to database
-        main.get_results(seqs, c)
+            error = seqs.json['error']
+        else:
+            main.get_results(seqs, c) # Get new results to add to database
 
     # Get all rows from database
     rows = c.execute(f"SELECT * FROM results ORDER BY {sort_column} {sort_order}").fetchall()
 
     main.close_database(conn)
 
-    return render_template('home.html', rows=rows)
+    return render_template('home.html', rows=rows, error=error)
 
 
 # Download database of results
