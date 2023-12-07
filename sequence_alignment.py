@@ -101,9 +101,6 @@ class SequenceAlignment(ABC):
             else:
                 invalid_seqs.append(seq)
 
-        print(valid_seqs)
-        print(invalid_seqs)
-
         if len(valid_seqs) < 2:
             if cli:
                 raise SystemExit('Error: At least two valid DNA sequences are required')

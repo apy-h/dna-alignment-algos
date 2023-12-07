@@ -12,7 +12,7 @@
         <h1>Sequence Alignment</h1>
         <p>Enter your DNA sequences to perform global and local sequence alignment.</p>
 
-        <form id="sequence-form" method="post">
+        <form id="sequence-form" method="post" enctype="multipart/form-data">
             <input type="radio" id="manual" name="input_type" value="manual">
             <label for="manual">Manual Input</label><br>
             <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences seperated by newlines" style="display: none;"></textarea>

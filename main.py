@@ -39,7 +39,7 @@ def get_results(seqs, c, cli=False):
         ga_align1, ga_align2 = ga.align
         la_align1, la_align2 = la.align
 
-        c.execute('INSERT INTO results VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, ga.alignment_score))
+        c.execute('INSERT INTO results (seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, la.alignment_score))
 
         if cli:
             print(f'Sequence 1: {seq1}\nSequence 2: {seq2}\n')
@@ -72,21 +72,6 @@ def cli_input():
     return SequenceAlignment.validate_input(seqs, True)
 
 
-def create_results_table(c):
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS results (
-            Sequence1 TEXT,
-            Sequence2 TEXT,
-            GlobalAlignment1 TEXT,
-            GlobalAlignment2 TEXT,
-            GlobalAlignmentScore INTEGER,
-            LocalAlignment1 TEXT,
-            LocalAlignment2 TEXT,
-            LocalAlignmentScore INTEGER,
-            Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-
 def usage_help():
     raise SystemExit(f'Usage:\n'
           f'{sys.argv[0]} sequence1 sequence2  # Command-line inputs\n'
@@ -97,7 +82,19 @@ def usage_help():
 def open_database():
     conn = connect('results.db')
     c = conn.cursor()
-    create_results_table(c)
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS results (
+            seq1 TEXT,
+            seq2 TEXT,
+            ga_align1 TEXT,
+            ga_align2 TEXT,
+            ga_score INTEGER,
+            la_align1 TEXT,
+            la_align2 TEXT,
+            la_score INTEGER,
+            time DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     return conn, c
 
 
@@ -107,7 +104,8 @@ def close_database(conn):
 
 
 def read_csv(file):
-    return [row[0].strip() for row in reader(file)]
+    return [row[0].strip() for row in reader(file) if row]
+
 
 def print_line(c):
     print('\n' + c * 50 + '\n')
