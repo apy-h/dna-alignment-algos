@@ -57,7 +57,7 @@ def cli_input():
             usage_help()
         elif os.path.isfile(sys.argv[1]) and os.path.splitext(sys.argv[1])[1].lower() == '.csv': # Valid CSV file input (should have each sequence on a new line)
             with open(sys.argv[1], 'r') as file:
-                seqs = read_csv(file)
+                seqs = [row[0].strip() for row in reader(file) if row]
         else: # Invalid CSV file input
             raise SystemExit(f'Error: {sys.argv[1]} is not a valid CSV file')
     elif len(sys.argv) == 1: # Execution-time inputs
@@ -101,10 +101,6 @@ def open_database():
 def close_database(conn):
     conn.commit()
     conn.close()
-
-
-def read_csv(file):
-    return [row[0].strip() for row in reader(file) if row]
 
 
 def print_line(c):
