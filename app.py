@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, Response, render_template, request, send_file
 import main
 
 
@@ -7,6 +7,9 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     conn, c = main.open_database()
+
+    sort_column = request.args.get('sort_column', default='time', type=str)
+    sort_order = request.args.get('sort_order', default='DESC', type=str)
 
     # If form is submitted
     if request.method == 'POST':
@@ -17,12 +20,15 @@ def home():
         else:
             seqs = request.files.get('csv').read().decode()
         seqs = main.SequenceAlignment.validate_input(split_by_line(seqs.replace(' ', '')))
+        
+        if isinstance(seqs, Response) and seqs.status_code == 400:
+            return render_template('home.html', error=seqs.json['error'])
 
         # Add results to database
         main.get_results(seqs, c)
 
     # Get all rows from database
-    rows = c.execute("SELECT * FROM results ORDER BY time DESC").fetchall()
+    rows = c.execute(f"SELECT * FROM results ORDER BY {sort_column} {sort_order}").fetchall()
 
     main.close_database(conn)
 

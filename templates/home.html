@@ -14,6 +14,9 @@
     <body>
         <h1>Sequence Alignment</h1>
         <h5>Enter your DNA sequences to perform global and local sequence alignment.</h5>
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
 
         <div id="loading" style="display: none;">
             <div id="loading-content">
@@ -34,6 +37,10 @@
 
         {% if rows %}
             <a href="{{ url_for('download_results') }}" id="download-button" class="btn">Download Results</a>
+            <button onclick="window.location.href = '/?sort_column=ga_score&sort_order=ASC'">Sort by Global Score Ascending</button>
+            <button onclick="window.location.href = '/?sort_column=ga_score&sort_order=DESC'">Sort by Global Score Descending</button>
+            <button onclick="window.location.href = '/?sort_column=la_score&sort_order=ASC'">Sort by Local Score Ascending</button>
+            <button onclick="window.location.href = '/?sort_column=la_score&sort_order=DESC'">Sort by Local Score Descending</button>
             <table>
                 <tr>
                     <th>Sequence 1</th>
