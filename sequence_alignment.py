@@ -129,11 +129,11 @@ class SequenceAlignment(ABC):
         return valid_seqs
 
 
-    # Return true if seq only contains the letters A, C, G, and T
+    # Return true if seq is not empty and only contains the letters A, C, G, and T
     # Return false otherwise
     @staticmethod
     def is_valid_dna(seq):
-        return set(seq.upper()).issubset('ACGT')
+        return bool(seq) and set(seq.upper()).issubset('ACGT')
 
     
     @property

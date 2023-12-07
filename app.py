@@ -19,6 +19,9 @@ def home():
             seqs = request.files.get('csv').read().decode()
         seqs = main.SequenceAlignment.validate_input(split_by_line(seqs.replace(' ', '')))
 
+        print(f'Seqs: {seqs}')
+        print(f'Number: {len(seqs)}')
+
         # Add results to database
         main.get_results(seqs, c)
 
