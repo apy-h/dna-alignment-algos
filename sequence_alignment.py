@@ -11,13 +11,13 @@ class SequenceAlignment(ABC):
     _DIAGONAL = 2
     _NO_DIRECTION = -1
 
+
     def __init__(self, seq, zero_floor, MATCH=1, MISMATCH=-1, GAP=-2):
         self._seq1, self._seq2 = seq
         self._n = len(self._seq1) + 1 # Number of rows of mat (height); seq1 is vertical axis
         self._m = len(self._seq2) + 1 # Number of columns of mat (width); seq2 is horizontal axis
         
-        self._align1 = self._align2 = self._alignment_score = None
-
+        # Score for each cross-sequence nucleotide set (if they're the same, different, or one is a gap)
         self._MATCH = MATCH
         self._MISMATCH = MISMATCH
         self._GAP = GAP
@@ -57,9 +57,11 @@ class SequenceAlignment(ABC):
                 
                 self._mat[i, j] = (max_score, direction)
     
+
     @abstractmethod
     def _traceback(self):
         pass
+
 
     # Starting from mat[i, j], follow the arrows of mat['direction'] until condition is met to create align1 and align2
     def _traceback_helper(self, i, j, condition):
@@ -90,15 +92,17 @@ class SequenceAlignment(ABC):
 
     # Return list of valid sequences (uppercased) from list of inputted sequences
     # Filter out invalid sequences and raise exception if less than 2 valid sequences
+    # Print valid and invalid sequences if run as a CLI tool
     @staticmethod
     def validate_input(seqs, cli=False):
         valid_seqs = []
-        invalid_seqs = []
+        if cli:
+            invalid_seqs = []
 
         for seq in seqs:
             if SequenceAlignment.is_valid_dna(seq):
                 valid_seqs.append(seq.upper())
-            else:
+            elif cli:
                 invalid_seqs.append(seq)
 
         if len(valid_seqs) < 2:
@@ -123,6 +127,7 @@ class SequenceAlignment(ABC):
                 print(f'\t{seq}')
             
         return valid_seqs
+
 
     # Return true if seq only contains the letters A, C, G, and T
     # Return false otherwise
@@ -149,6 +154,7 @@ class SequenceAlignment(ABC):
     @property
     def mat(self):
         return self._mat
+
 
     # Given list of tuples [(x1, y1), (x2, y2), ...], return tuple of strings (x1x2..., y1y2...)
     @staticmethod
@@ -189,11 +195,11 @@ class LocalAlignment(SequenceAlignment):
     def __init__(self, seq, MATCH=1, MISMATCH=-1, GAP=-2):
         super().__init__(seq, True, MATCH, MISMATCH, GAP)
 
-
+    # Starting from cell with highest score (closes to mat[0, 0]), follow the arrows until we reach a nonpositive score or cell without an arrow
+    # Creates 2 strings that include subsets of nucleotides of seq1 and seq2 that align
     def _traceback(self):
-        # Starting from cell with highest score (closes to mat[0, 0]), follow the arrows until we reach a nonpositive score or cell without an arrow
         i, j = np.unravel_index(np.argmax(self._mat['score']), self._mat.shape)
-        self._alignment_score = self._mat['score'][i, j]
+        self._alignment_score = self._mat['score'][i, j] # Cell with highested score
         self._traceback_helper(i, j, 
                                lambda i, j: self._mat['score'][i, j] > 0 and 
                                self._mat['direction'][i, j] != self._NO_DIRECTION)

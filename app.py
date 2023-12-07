@@ -24,12 +24,11 @@ def home():
 
     # Get all rows from database
     rows = c.execute("SELECT seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score FROM results ORDER BY time DESC").fetchall()
-    rows = [(seq1, seq2, ga_align1, ga_align2, int.from_bytes(ga_score, 'little', signed=True), la_align1, la_align2, int.from_bytes(la_score, 'little', signed=True)) for seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score in rows]
 
     main.close_database(conn)
 
     return render_template('home.html', rows=rows)
 
-
+# Return list representation of string split by newlines (and \r\n for compatibility)
 def split_by_line(str):
     return str.replace('\r\n', '\n').split('\n')

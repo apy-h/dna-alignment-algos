@@ -8,27 +8,24 @@ from sequence_alignment import GlobalAlignment, LocalAlignment, SequenceAlignmen
 
 
 def main():
+    # Get input from CLI program
     seqs = cli_input()
     print_line('*')
 
     conn, c = open_database()
 
     num_seqs = len(seqs)
-    num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2)
+    num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2) # Combination formula
     
     print(f'Number of sequences: {num_seqs}')
     print(f'Number of combinations: {num_combinations}')
     print_line('*')
 
+    # Save results to database and print them
     get_results(seqs, c, True)
 
     close_database(conn)
 
-    # # Save results to CSV file
-    # with open('results.csv', 'w', newline='') as file:
-    #     w = writer(file)
-    #     w.writerow(['Sequence1', 'Sequence1', 'GlobalAlignment1', 'GlobalAlignment2', 'GlobalAlignmentScore', 'LocalAlignment1', 'LocalAlignment2', 'LocalAlignmentScore'])
-    #     w.writerows(results)
 
 # Save alignment results from all combinations of sequences to database
 # (And print them if program is being run as CLI tool)
@@ -40,9 +37,7 @@ def get_results(seqs, c, cli=False):
         ga_align1, ga_align2 = ga.align
         la_align1, la_align2 = la.align
 
-        print(f'{ga.alignment_score} and {la.alignment_score}')
-
-        c.execute('INSERT INTO results (seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, la.alignment_score))
+        c.execute('INSERT INTO results (seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, int(ga.alignment_score), la_align1, la_align2, int(la.alignment_score)))
 
         if cli:
             print(f'Sequence 1: {seq1}\nSequence 2: {seq2}\n')
@@ -75,6 +70,7 @@ def cli_input():
     return SequenceAlignment.validate_input(seqs, True)
 
 
+# Raise exception that provides input format
 def usage_help():
     raise SystemExit(f'Usage:\n'
           f'{sys.argv[0]} sequence1 sequence2  # Command-line inputs\n'
@@ -82,6 +78,7 @@ def usage_help():
           f'{sys.argv[0]}                      # Interactive inputs')
 
 
+# Create database connection and create results table if needed
 def open_database():
     conn = connect('results.db')
     c = conn.cursor()
@@ -106,8 +103,9 @@ def close_database(conn):
     conn.close()
 
 
-def print_line(c):
-    print('\n' + c * 50 + '\n')
+# Print the character c n times, surronded by newlines on both sides
+def print_line(c, n=50):
+    print('\n' + c * n + '\n')
     
 
 if __name__ == '__main__':
