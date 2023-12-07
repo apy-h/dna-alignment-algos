@@ -2,32 +2,34 @@ from flask import Flask, render_template, request
 import main
 from math import factorial
 
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    conn, c = main.open_database()
+
+    # If form is submitted
     if request.method == 'POST':
         # Get and validate user input
         input_type = request.form.get('input_type')
         if input_type == 'manual':
             seqs = request.form.get('sequences')
         else:
-            seqs = request.files.get('csv').read().decode('utf-8')
-        
-        seqs = main.SequenceAlignment.validate_input(split_by_line(seqs.replace(' ', '')), True)
+            seqs = request.files.get('csv').read().decode()
+        seqs = main.SequenceAlignment.validate_input(split_by_line(seqs.replace(' ', '')))
 
-        num_seqs = len(seqs)
-        num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2)
+        # Add results to database
+        main.get_results(seqs, c)
 
-        conn, c = main.open_database()
+    # Get all rows from database
+    rows = c.execute("SELECT seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score FROM results ORDER BY time DESC").fetchall()
+    rows = [(seq1, seq2, ga_align1, ga_align2, int.from_bytes(ga_score, 'little', signed=True), la_align1, la_align2, int.from_bytes(la_score, 'little', signed=True)) for seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score in rows]
 
-        main.get_results(seqs, c, True)
-        
-        # rows = c.execute("SELECT * FROM results ORDER BY time DESC").fetchall()
-    
-        # main.close_database(conn)
+    main.close_database(conn)
 
-    return render_template('home.html')
+    return render_template('home.html', rows=rows)
+
 
 def split_by_line(str):
     return str.replace('\r\n', '\n').split('\n')

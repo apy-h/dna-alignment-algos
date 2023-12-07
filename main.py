@@ -1,10 +1,11 @@
-from csv import reader, writer
+from csv import reader
 from itertools import combinations
 from math import factorial
 import os
 from sqlite3 import connect
 import sys
 from sequence_alignment import GlobalAlignment, LocalAlignment, SequenceAlignment
+
 
 def main():
     seqs = cli_input()
@@ -38,6 +39,8 @@ def get_results(seqs, c, cli=False):
 
         ga_align1, ga_align2 = ga.align
         la_align1, la_align2 = la.align
+
+        print(f'{ga.alignment_score} and {la.alignment_score}')
 
         c.execute('INSERT INTO results (seq1, seq2, ga_align1, ga_align2, ga_score, la_align1, la_align2, la_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (seq1, seq2, ga_align1, ga_align2, ga.alignment_score, la_align1, la_align2, la.alignment_score))
 
