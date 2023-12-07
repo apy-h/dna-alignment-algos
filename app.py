@@ -31,7 +31,7 @@ def home():
             main.get_results(seqs, c) # Get new results to add to database
 
     # Get all rows from database
-    rows = c.execute(f"SELECT * FROM results ORDER BY {sort_column} {sort_order}").fetchall()
+    rows = c.execute(f'SELECT * FROM results ORDER BY {sort_column} {sort_order}').fetchall()
 
     main.close_database(conn)
 

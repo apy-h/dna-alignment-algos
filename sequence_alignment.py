@@ -195,6 +195,7 @@ class LocalAlignment(SequenceAlignment):
     def __init__(self, seq, MATCH=1, MISMATCH=-1, GAP=-2):
         super().__init__(seq, True, MATCH, MISMATCH, GAP)
 
+
     # Starting from cell with highest score (closes to mat[0, 0]), follow the arrows until we reach a nonpositive score or cell without an arrow
     # Creates 2 strings that include subsets of nucleotides of seq1 and seq2 that align
     def _traceback(self):
@@ -203,6 +204,7 @@ class LocalAlignment(SequenceAlignment):
         self._traceback_helper(i, j, 
                                lambda i, j: self._mat['score'][i, j] > 0 and 
                                self._mat['direction'][i, j] != self._NO_DIRECTION)
+
 
     def _set_alignment_score(self):
         if not self._alignment_score:
