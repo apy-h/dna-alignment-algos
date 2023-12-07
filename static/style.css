@@ -1,5 +1,5 @@
 body {
-    font-family: 'Times New Roman', serif;
+    font-family: 'Times New Roman', serif !important;
     color: #333;
     background-color: #f0f0f0;
     padding: 20px;
@@ -21,6 +21,18 @@ form {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
+#manual-input, #csv-input, #submit {
+    display: none;
+}
+
+#manual-input {
+    width: 60%;
+}
+
+#csv-input {
+    margin-bottom: 15px;
+}
+
 input[type="submit"] {
     background-color: #000;
     color: #fff;
@@ -39,6 +51,10 @@ table {
     border-collapse: collapse;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 th, td {
