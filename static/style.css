@@ -3,7 +3,7 @@
 }
 
 body {
-    font-family: 'Times New Roman', serif !important;
+    font-family: "Times New Roman", serif !important;
     color: darkslategrey;
     padding: 1%;
 }
@@ -28,21 +28,46 @@ form {
     width: 60%;
 }
 
-input[type="submit"], #download-button {
-    background-color: black;
-    color: white;
+input[type="submit"], #download-button, .sort-button {
     border: none;
-    margin: 5px;
-    padding: 10px;
+    padding: 5px;
     border-radius: 5px;
 }
 
-input[type="submit"]:hover, #download-button:hover {
-    background-color: darkslategrey;
+input[type="submit"], #download-button {
+    background-color: black;
+    color: white;
+}
+
+input[type="submit"] {
+    margin: 5px;
 }
 
 #download-button {
     margin: 1%;
+}
+
+.sort-button {
+    background-color: lightgrey;
+    color: black;
+}
+
+input[type="submit"]:hover, #download-button:hover, .sort-button:hover {
+    background-color: darkslategrey;
+}
+
+.sort-button:hover {
+    color: white;
+}
+
+#table-controls, #sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#sort-controls {
+    margin-left: auto;
 }
 
 table {
@@ -77,7 +102,7 @@ td {
     white-space: nowrap;
 }
 
-/* Define 'spin' keyframes animation that rotates from 0 to 360 degrees */
+/* Define spin keyframes animation that rotates from 0 to 360 degrees */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -108,7 +133,7 @@ td {
 #loading-spinner {
     width: 100px;
     height: 100px;
-    /* Apply 'spin' animation for 2 seconds at a constant speed to repeat indefinitely (infinite) */
+    /* Apply spin animation for 2 seconds at a constant speed to repeat indefinitely (infinite) */
     animation: spin 2s linear infinite;
 }
 

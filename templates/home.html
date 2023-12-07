@@ -13,7 +13,7 @@
 
     <body>
         <h1>Sequence Alignment</h1>
-        <h5>Enter your DNA sequences to perform global and local sequence alignment.</h5>
+        <h4>Enter your DNA sequences to perform global and local sequence alignment.</h4>
         <br>
 
         <!-- Show error message if less than 2 valid DNA sequences submitted -->
@@ -26,7 +26,7 @@
         <div id="loading" style="display: none;">
             <div id="loading-content">
                 <img src="{{ url_for('static', filename='favicon.png') }}" id="loading-spinner">
-                <h6 id="timer">0 seconds</h6>
+                <h5 id="timer">0 seconds</h5>
             </div>
         </div>
 
@@ -46,17 +46,24 @@
             <input type="submit" id="submit" value="Submit">
         </form>
 
-        <!-- Table representation of results.db -->
-        {% if rows %}
-            <!-- Button to download results.db -->
-            <a href="{{ url_for('download_results') }}" id="download-button" class="btn">Download Results</a>
+        {% if rows %}            
+            <div id="table-controls">
+                <!-- Button to download results.db -->
+                <a href="{{ url_for('download_results') }}" id="download-button" class="btn">Download Results</a>
 
-            
-            <button onclick="window.location.href = '/?sort_column=ga_score&sort_order=ASC'">Sort by Global Score Ascending</button>
-            <button onclick="window.location.href = '/?sort_column=ga_score&sort_order=DESC'">Sort by Global Score Descending</button>
-            <button onclick="window.location.href = '/?sort_column=la_score&sort_order=ASC'">Sort by Local Score Ascending</button>
-            <button onclick="window.location.href = '/?sort_column=la_score&sort_order=DESC'">Sort by Local Score Descending</button>
+                <!-- Buttons to sort table -->
+                <div id="sort-controls">
+                    <h5>Sort By:</h5>
+                    <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order=ASC'">Global Score &#x25BC;</button>
+                    <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order=DESC'">Global Score &#x25B2;</button>
+                    <button class="sort-button" onclick="window.location.href = '/?sort_column=la_score&sort_order=ASC'">Local Score &#x25BC;</button>
+                    <button class="sort-button" onclick="window.location.href = '/?sort_column=la_score&sort_order=DESC'">Local Score &#x25B2;</button>
+                    <button class="sort-button" onclick="window.location.href = '/?sort_column=time&sort_order=ASC'">Time &#x25BC;</button>
+                    <button class="sort-button" onclick="window.location.href = '/?sort_column=time&sort_order=DESC'">Time &#x25B2;</button>
+                </div>
+            </div>
 
+            <!-- Table representation of results.db -->
             <table>
                 <tr>
                     <th>Sequence 1</th>
