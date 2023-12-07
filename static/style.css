@@ -1,24 +1,28 @@
+:root {
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
 body {
     font-family: 'Times New Roman', serif !important;
-    color: #333;
-    background-color: #f0f0f0;
+    color: darkslategrey;
+    background-color: whitesmoke;
     padding: 20px;
 }
 
 h1 {
-    color: #000;
+    color: black;
 }
 
 p {
-    color: #666;
+    color: darkslategrey;
 }
 
 form {
-    background-color: #fff;
+    background-color: white;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 10px var(--shadow);
 }
 
 #manual-input, #csv-input, #submit {
@@ -34,8 +38,8 @@ form {
 }
 
 input[type="submit"] {
-    background-color: #000;
-    color: #fff;
+    background-color: black;
+    color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -43,14 +47,14 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #444;
+    background-color: darkslategrey;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    box-shadow: 0px 0px 10px var(--shadow);
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
@@ -59,12 +63,20 @@ table {
 
 th, td {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid darkslategrey;
     text-align: left;
 }
 
 th {
-    background-color: #ddd;
+    background-color: darkgrey;
+}
+
+tr:nth-child(even) {
+    background-color: whitesmoke;
+}
+
+tr:hover {
+    background-color: lightgrey;
 }
 
 td {
