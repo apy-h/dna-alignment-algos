@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Times New Roman', serif;
     color: #333;
     background-color: #f0f0f0;
     padding: 20px;
@@ -49,4 +49,11 @@ th, td {
 
 th {
     background-color: #ddd;
+}
+
+td {
+    max-width: 20ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

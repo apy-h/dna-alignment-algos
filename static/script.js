@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    // Show tooltip when hovering over input field
+    $('[data-toggle="tooltip"]').tooltip()
+
     // Hide the manual and CSV input fields and the submit button initally
     function hideInputs() {
         $('#manual-input').hide();
