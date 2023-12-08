@@ -1,6 +1,9 @@
 # DNA Alignment: User's Manual
 
+## [Video Walkthrough](https://youtu.be/xPMsahcAv24)
+
 ## Overview
+
 I coded a program that enables biologists to score the similarity between DNA sequences and view the aligned portions. Given DNA sequences as [input](#input), the program [outputs](#output) a numerical and visual representation of their alignment.
 
 It does this by implementing two algorithms for DNA alignment: the [Needleman-Wunsch algorithm for global alignment](DESIGN.md#needleman-wunsch-algorithm-for-global-alignment) and the [Smith-Waterman algorithm for local alignment](DESIGN.md#smith-waterman-algorithm-for-local-alignment). I describe both in detail in the [algorithms](DESIGN.md#algorithms) section of my [design document](DESIGN.md). The main takeaways are that one can either try to align two DNA sequences over all their nucleotides using the Needleman-Wunsch algorithm or look for portions of the inputted sequences that are closely aligned using the Smith-Waterman algorithm.
@@ -30,6 +33,7 @@ Depending on the number of sequences the user inputs, the program will produce a
 ***
 
 ## Set-Up
+
 To prepare to test the program:
 1. Download the distribution code of the program
 2. Upload the distribution code to Visual Studio Code (VSCode) or [cs50.dev](https://cs50.dev/)
@@ -57,6 +61,7 @@ I created a website for my program to make the user experience more pleasant. It
 16. Press the "Sort by: Time ▲" button to sort the database so that rows created more recently show up top
 
 ### Test Cases
+
 To validate the exact global and local alignment sequences and scores that the inputted sequences produce, feel free to use the Needleman-Wunsch and Smith-Waterman tools linked in the [resources section](#resources) with a match score of 1, mismatch score of -1, and gap score of -2, as is standard.
 
 | Type | Input | Expected Output | Explaination | Purpose |
@@ -92,6 +97,7 @@ python3 main.py                      # Interactive inputs
 10. Try out the unit test cases marked by "Unit Tests" listed below
 
 ### Test Cases
+
 Again, feel free to validate the exact outputs using the tools linked in the [resources section](#resources)!
 
 | Type | Input | Expected Output | Explaination | Purpose |

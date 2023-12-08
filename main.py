@@ -83,8 +83,8 @@ def open_database():
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS results (
-            seq1 TEXT,
-            seq2 TEXT,
+            seq1 TEXT NOT NULL,
+            seq2 TEXT NOT NULL,
             ga_align1 TEXT,
             ga_align2 TEXT,
             ga_score INTEGER,
