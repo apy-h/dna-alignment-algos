@@ -62,7 +62,12 @@ To validate the exact global and local alignment sequences and scores that the i
 
 | Type | Input | Expected Output | Explaination | Purpose |
 | ---- | ----- | --------------- | ------------ | ------- |
-| Manual Input | `ATCG` and `ATTG` on seperate lines in the input field, then press "Submit" | One new row | Simple test case |
+| Manual Input | `ATCG` and `ATTG` on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Simple test case |
+| Manual Input | `ATCG`, `ATTG`, and an empty line on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves that the program can ignore newlines |
+| Manual Input | `ATcg` and `attG` on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves program is case insensitive |
+| Manual Input | `ATCG` and `ATTGC` on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves that the inputted sequences can be different lenghts |
+| Manual Input | `ATCG` and `ATTGx` on seperate lines | "Submit" button doesn't show up | The second sequence is invalid, so there is only one valid sequence | Proves that the program can prevent errors |
+| Manual Input | `ATCG`, `ATTG`, and `ATGG` on seperate lines | "Submit" button doesn't show up | The three inputted sequences are valid | Proves that the program can handle over two inputted sequences |
 | CSV | Upload `app.py` | "Submit" button doesn't show up | `app.py` is not a valid CSV file | Proves that the program can prevent errors |
 | CSV | Upload `test.csv`, then press "Submit" | 190 new rows | 20 of the 26 inputted sequences are valid | Proves that the program can handle many test cases |
 
