@@ -47,7 +47,7 @@ I created a website for my program to make the user experience more pleasant. It
 6. Run `flask run` in the terminal
 7. Click on the link that is printed to the console to navigate to the webpage, where you should see the words "DNA Alignment".
 8. Click on the "Manual Input" radio button and try out the test cases marked as "Manual" listed below
-9. Click on the "Upload CSV" file and try out the test case marked as "CSV" listed below
+9. Click on the "Upload CSV" file and try out the test cases marked as "CSV" listed below
 
 ### Test Cases
 To validate the exact global and local alignment sequences and scores that the inputted sequences produce, feel free to use the Needleman-Wunsch and Smith-Waterman tools linked in the [resources section](#resources) with a match score of 1, mismatch score of -1, and gap score of -2, as is standard.
@@ -83,12 +83,13 @@ Again, feel free to validate the exact outputs using the tools linked in the [re
 | Command-Line | `python3 main.py ATCG ATTGx ` | `Error: At least two valid DNA sequences are required` | The second sequence is invalid, so there is only one valid sequence | Proves that the program can handle errors |
 | Command-Line | `python3 main.py ATCG ATTG ATGG` | Three sets of ouputs | The three inputted sequences are valid | Proves that the program can handle over two inputted sequences |
 | CSV | `python3 main.py dne.csv` | `Error: dne.csv is not a valid CSV file` | `dne.csv` does not exist in the working directory | Proves that the program can handle errors |
-| CSV | `python3 main.py app.py` | `Error: app.py is not a valid CSV file` | `dne.csv` does not exist in the working directory | Proves that the program can handle errors |
+| CSV | `python3 main.py app.py` | `Error: app.py is not a valid CSV file` | `app.py` is not a valid CSV file | Proves that the program can handle errors |
 | CSV | `python3 main.py test.csv` | 190 sets of ouputs | 20 of the 26 inputted sequences are valid | Proves that the program can handle many test cases |
 | Interactive | `python3 main.py` followed by `ATCG`, `ATTG`, a newline, then `done` | One set of outputs | The two inputted sequences are valid | Proves that the program can ignore newlines |
 | Interactive | `python3 main.py` followed by `ATCG`, then `DOne` | `Error: At least two valid DNA sequences are required` | Only one valid input was provided | Proves that the program can handle errors and `done` is case insensitive |
 | Interactive | `python3 main.py` followed by `ATCG`, `ATG C`, `GCTA`, then `d` | One set of outputs | The second sequence is invalid, so two valid inputs were provided | Proves that the program can handle errors and `d` works as well as `done` |
-
+| Unit Tests | `python3 -m unittest -v test_sequence_alignment.TestGlobalAlignment` | `OK` (pass) | The program can handle input of the same length, different lengths, and having some empty inputs | Prove that the global alignment portion of the program works on individual sequence pairs |
+| Unit Tests | `python3 -m unittest -v test_sequence_alignment.TestLocalAlignment` | `OK` (pass) | The program can handle input of the same length, different lengths, and having some empty inputs | Prove that the local alignment portion of the program works on individual sequence pairs |
 
 ***
 
