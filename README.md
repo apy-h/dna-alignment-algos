@@ -15,7 +15,7 @@ After [getting ready to to test my code](#set-up), try out its two methods of us
 
 The user inputs two or more DNA sequences as their standard string representations, where `A` represents the nucleotide adenine, `T` represents thymine, `C` represents cytosine, and `G` represents guanine. For example, `GATTCGACGC` is a sample input  sequence with 10 nucleotides with two adenines, two thymines, three cytosines, and three guanines.
 
-Depending on how the user is interacting with the program, they will either seperate each input sequence with either a single space or a newline. If the user is uploading a file as input, it must have the `.CSV` extension (case insensitive) and have each sequence on a newline with no other seperators.
+Depending on how the user is interacting with the program, they will seperate each input sequence with either a single space or a newline. If the user is uploading a file as input, it must have the `.CSV` extension (case insensitive) and have each sequence on a newline with no other seperators.
 
 ### Output
 
@@ -24,7 +24,7 @@ Depending on the number of sequences the user inputs, the program will produce a
 * **Global Alignment 2**: this is the string representation of the second inputted sequence aligned with gaps to the first.
 * **Global Alignment Score**: this is an integer (positive or negative) that represents how similar the two sequences are when aligned.
 * **Local Alignment 1**: it is part or all of the first inputted sequence (with all the same nucleotides in the same order) with gaps inserted to increase its alignment with part or all of the second inputted sequence of the pair.
-* **Local Alignment 2**: this is the string representation of the second inputted sequence aligned with gaps to the first.
+* **Local Alignment 2**: this is the string representation of part or all of the second inputted sequence aligned with gaps to the first.
 * **Local Alignment Score**: this is a positive integer that represents how similar the aligned portions of the two sequences are.
 
 ***
@@ -41,7 +41,7 @@ To prepare to test the program:
 
 ## GUI
 
-I created a website for my program to make the user experience more pleasant. It enables people from non-technical backgrounds to use the program and easily visualize its.
+I created a website for my program to make the user experience more pleasant. It enables people from non-technical backgrounds to use the program and easily visualize its execution.
 
 ### Steps
 6. Run `flask run` in the terminal
@@ -56,21 +56,20 @@ I created a website for my program to make the user experience more pleasant. It
 15. Press the "Sort by: Time ▼" button to sort the database so that rows created longer ago show up top
 16. Press the "Sort by: Time ▲" button to sort the database so that rows created more recently show up top
 
-
 ### Test Cases
 To validate the exact global and local alignment sequences and scores that the inputted sequences produce, feel free to use the Needleman-Wunsch and Smith-Waterman tools linked in the [resources section](#resources) with a match score of 1, mismatch score of -1, and gap score of -2, as is standard.
 
 | Type | Input | Expected Output | Explaination | Purpose |
 | ---- | ----- | --------------- | ------------ | ------- |
 | Manual Input | `ATCG` and `ATTG` on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Simple test case |
-| Manual Input | `ATCG`, `ATTG`, and an empty line on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves that the program can ignore newlines |
 | Manual Input | `ATcg` and `attG` on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves program is case insensitive |
 | Manual Input | `ATCG` and `ATTGC` on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves that the inputted sequences can be different lenghts |
 | Manual Input | `ATCG` and `ATTGx` on seperate lines | "Submit" button doesn't show up | The second sequence is invalid, so there is only one valid sequence | Proves that the program can prevent errors |
-| Manual Input | `ATCG`, `ATTG`, and `ATGG` on seperate lines | "Submit" button doesn't show up | The three inputted sequences are valid | Proves that the program can handle over two inputted sequences |
+| Manual Input | `ATCG`, `ATTG`, and `ATGG` on seperate lines | Three new rows | The three inputted sequences are valid | Proves that the program can handle over two inputted sequences |
+| Manual Input | `ATCG`, `ATTG`, and an empty line on seperate lines in the input field, then press "Submit" | One new row | The two inputted sequences are valid | Proves that the program can ignore newlines |
+| Manual Input | `ATCG` then press "Submit" | `At least two valid DNA sequences are required` | Only one valid input was provided | Proves that the program can handle errors |
 | CSV | Upload `app.py` | "Submit" button doesn't show up | `app.py` is not a valid CSV file | Proves that the program can prevent errors |
 | CSV | Upload `test.csv`, then press "Submit" | 190 new rows | 20 of the 26 inputted sequences are valid | Proves that the program can handle many test cases |
-
 
 ***
 
