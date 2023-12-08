@@ -20,12 +20,12 @@ Depending on how the user is interacting with the program, they will either sepe
 ### Output
 
 Depending on the number of sequences the user inputs, the program will produce a different number of sets of outputs. The program produces one set of outputs for each combinations of two inputted sequences: for example, with `A`, `T`, and `C` as inputs, the combinations are {`A`, `T`}, {`A`, `C`}, and {`T`, `C`}, and each of the three combinations produces its own set of ouputs. Each set of outputs consists of the following:
-* **Global Alignment 1**: this is string representation of a DNA sequence, potentially with gaps (represented by hyphens, `-`).
-* **Global Alignment 2**: 
-* **Global Alignment Score**: 
-* **Local Alignment 1**: 
-* **Local Alignment 2**: 
-* **Local Alignment Score**: 
+* **Global Alignment 1**: this is the string representation of a DNA sequence, potentially with gaps (represented by hyphens, `-`). It is an alteration of the first inputted sequence (with all the same nucleotides in the same order) with gaps inserted to increase its overall alignment with the second inputted sequence of the pair.
+* **Global Alignment 2**: this is the string representation of the second inputted sequence aligned with gaps to the first.
+* **Global Alignment Score**: this is an integer (positive or negative) that represents how similar the two sequences are when aligned.
+* **Local Alignment 1**: it is part or all of the first inputted sequence (with all the same nucleotides in the same order) with gaps inserted to increase its alignment with part or all of the second inputted sequence of the pair.
+* **Local Alignment 2**: this is the string representation of the second inputted sequence aligned with gaps to the first.
+* **Local Alignment Score**: this is a positive integer that represents how similar the aligned portions of the two sequences are.
 
 ***
 
@@ -48,9 +48,24 @@ I created a website for my program to make the user experience more pleasant. It
 7. Click on the link that is printed to the console to navigate to the webpage, where you should see the words "DNA Alignment".
 8. Click on the "Manual Input" radio button and try out the test cases marked as "Manual" listed below
 9. Click on the "Upload CSV" file and try out the test cases marked as "CSV" listed below
+10. Press the "Download Resuls" button to download an SQLite3 database of results
+11. Press the "Sort by: Global Score ▼" button to sort the database so that rows with lower global scores show up top
+12. Press the "Sort by: Global Score ▲" button to sort the database so that rows with higher global scores show up top
+13. Press the "Sort by: Local Score ▼" button to sort the database so that rows with lower local scores show up top
+14. Press the "Sort by: Local Score ▲" button to sort the database so that rows with higher local scores show up top
+15. Press the "Sort by: Time ▼" button to sort the database so that rows created longer ago show up top
+16. Press the "Sort by: Time ▲" button to sort the database so that rows created more recently show up top
+
 
 ### Test Cases
 To validate the exact global and local alignment sequences and scores that the inputted sequences produce, feel free to use the Needleman-Wunsch and Smith-Waterman tools linked in the [resources section](#resources) with a match score of 1, mismatch score of -1, and gap score of -2, as is standard.
+
+| Type | Input | Expected Output | Explaination | Purpose |
+| ---- | ----- | --------------- | ------------ | ------- |
+| Manual Input | `ATCG` and `ATTG` on seperate lines in the input field, then press "Submit" | One new row | Simple test case |
+| CSV | Upload `app.py` | "Submit" button doesn't show up | `app.py` is not a valid CSV file | Proves that the program can prevent errors |
+| CSV | Upload `test.csv`, then press "Submit" | 190 new rows | 20 of the 26 inputted sequences are valid | Proves that the program can handle many test cases |
+
 
 ***
 
@@ -87,7 +102,7 @@ Again, feel free to validate the exact outputs using the tools linked in the [re
 | CSV | `python3 main.py test.csv` | 190 sets of ouputs | 20 of the 26 inputted sequences are valid | Proves that the program can handle many test cases |
 | Interactive | `python3 main.py` followed by `ATCG`, `ATTG`, a newline, then `done` | One set of outputs | The two inputted sequences are valid | Proves that the program can ignore newlines |
 | Interactive | `python3 main.py` followed by `ATCG`, then `DOne` | `Error: At least two valid DNA sequences are required` | Only one valid input was provided | Proves that the program can handle errors and `done` is case insensitive |
-| Interactive | `python3 main.py` followed by `ATCG`, `ATG C`, `GCTA`, then `d` | One set of outputs | The second sequence is invalid, so two valid inputs were provided | Proves that the program can handle errors and `d` works as well as `done` |
+| Interactive | `python3 main.py` followed by `ATCG`, `ATT G`, `ATGG`, then `d` | One set of outputs | The second sequence is invalid, so two valid inputs were provided | Proves that the program can handle errors and `d` works as well as `done` |
 | Unit Tests | `python3 -m unittest -v test_sequence_alignment.TestGlobalAlignment` | `OK` (pass) | The program can handle input of the same length, different lengths, and having some empty inputs | Prove that the global alignment portion of the program works on individual sequence pairs |
 | Unit Tests | `python3 -m unittest -v test_sequence_alignment.TestLocalAlignment` | `OK` (pass) | The program can handle input of the same length, different lengths, and having some empty inputs | Prove that the local alignment portion of the program works on individual sequence pairs |
 
