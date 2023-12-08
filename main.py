@@ -1,6 +1,5 @@
 from csv import reader
 from itertools import combinations
-from math import factorial
 import os
 from sqlite3 import connect
 import sys
@@ -15,8 +14,8 @@ def main():
     conn, c = open_database()
 
     num_seqs = len(seqs)
-    num_combinations = factorial(num_seqs) / 2*factorial(num_seqs - 2) # Combination formula
-    
+    num_combinations = int(num_seqs * (num_seqs - 1) / 2)  # Combination formula for k=2
+
     print(f'Number of sequences: {num_seqs}')
     print(f'Number of combinations: {num_combinations}')
     print_line('*')
@@ -47,7 +46,7 @@ def get_results(seqs, c, cli=False):
 
 
 def cli_input():
-    seqs = None
+    seqs = []
     if len(sys.argv) >= 3: # Command-line inputs
         seqs = sys.argv[1:]
     elif len(sys.argv) == 2:
