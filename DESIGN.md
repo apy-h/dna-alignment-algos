@@ -1,5 +1,36 @@
 # DNA Alignment: Design Document
 
+## Languages
 
 
-A “design document” for your project in the form of a Markdown file called DESIGN.md that discusses, technically, how you implemented your project and why you made the design decisions you did. Your design document should be at least several paragraphs in length. Whereas your documentation is meant to be a user’s manual, consider your design document your opportunity to give the staff a technical tour of your project underneath its hood.
+
+## File Structure
+
+```console
+/dna-alignment
+    /static
+        favicon.png
+        script.js
+        style.css
+    /templates
+        home.html
+    .gitingnore
+    app.py
+    DESIGN.md
+    main.py
+    README.md
+    results.db
+    sequence_alignment.py
+    test_sequence_alignment.py
+    test.csv
+```
+
+***
+
+## Algorithms
+
+### Needleman-Wunsch Algorithm for Global Alignment
+
+### Smith-Waterman algorithm for local alignment
+
+***
