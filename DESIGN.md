@@ -2,7 +2,7 @@
 
 ## File Structure
 
-The main logic of my program is coded in Python, and I use the Flask framework with HTML, CSS, and JS to create the GUI.
+The main logic of my program is coded in Python, and I use the Flask framework with HTML, CSS, JS, and Jinja to create the GUI.
 
 ```console
 /dna-alignment
@@ -82,13 +82,13 @@ I will walk you through how this algorithm works step-by-step by using the sampl
 | T | (-8, ↑) | (-7, ↑) | (-4, ↖) | (-5, ↑) | (-3, ↑) | (0, ↖) |
 | G | (-10, ↑) | (-9, ↑) | (-6, ↑) | (-5, ↖) | (-4, ↖) | (-2, ↑) |
 
-6. In `traceback()`, start from bottom right cell and follow the arrows until top left, saving the nucleotides in each `seq1` and `seq2` or gaps (represented by `-`) in the case of horizontal/vertical movement as we go
-7. Since we started from the bottom right and went to the top left, reverse the saved sequences to get `align1=-TGGTG` and `align2=ATCGT-`
+6. In `traceback()`, start from bottom right cell and follow the arrows until top left, saving the nucleotides in `seq1` and `seq2`, or gaps (represented by `-`) in the case of horizontal/vertical movement as we go
+7. Since we started from the bottom right and went to the top left, reverse the saved sequences to get `align1 = -TGGTG` and `align2 = ATCGT-`
 8. In `set_alignment_score()`, set `alignment_score` to the value of the bottom right cell in the matrix; in this case `alignment_score = -2`
 
 ### Smith-Waterman Algorithm for Local Alignment
 
-I will walk you through how this algorithm works step-by-step by using the same sample inputs `seq1 = TGGTG` and `seq2 = ATCGT`.
+I will walk you through how this algorithm works step-by-step by using the same sample inputs, `seq1 = TGGTG` and `seq2 = ATCGT`.
 
 1. Set `n` to one more than the number of nucleotides in `seq1`, so `n = 6`
 2. Set `m` to one more than the number of nucleotides in `seq2`, so `m = 6`
@@ -103,11 +103,13 @@ I will walk you through how this algorithm works step-by-step by using the same 
 | T | 0 | 0 | 0 | 0 | 0 | 0 |
 | G | 0 | 0 | 0 | 0 | 0 | 0 |
 
-4. In `fill_matrix()`, starting from the top left cell, calculate the score of each cell as the maximum of:
+_Note that the first three steps of the global and local alignment algorithms are identical, so I refactored my code to reduce redundancy between the two by using an inherited class strucutre_
+
+4. In `fill_matrix()`, starting from the highest scoring cell, calculate the score of each cell as the maximum of:
     * The score of the cell to its left + a gap penalty (set to -2): this represents aligning the nucleotide in `seq2` with a gap in `seq1`, so we are moving horizontally over `seq2`    
     * The score of the cell above it + a gap penalty: this represents aligning the nucleotide in `seq1` with a gap in `seq2`, so we are moving vertically over `seq1` 
     * The score of the cell to its upper-left diagonal + a match reward if they nucleotides in `seq1` and `seq2` (set to 1) are the same or a mismatch penalty (set to -1) otherwise: this representings aligning the nucleotides of `seq1` and `seq2`
-    * `0`
+    * `0` (since the minimum local alignment score is 0)
 5. In each cell, also store the direction that the current cell's score was derived from (either left, up, or none, represented by `-`)
 
 |  |  | A | T | C | G | T |
@@ -119,7 +121,9 @@ I will walk you through how this algorithm works step-by-step by using the same 
 | T | (0, 0) | (0, -) | (1, ↖) | (0, -) | (0, -) | (2, ↖) |
 | G | (0, 0) | (0, -) | (0, -) | (0, -) | (1, ↖) | (0, -) |
 
-6. In `traceback()`, start from the cell with the highest score and follow the arrows until we reach a nonpositive score or a cell without an arrow, saving the nucleotides in each `seq1` and `seq2` or gaps (represented by `-`) in the case of horizontal/vertical movement as we go
+_Note that, if you analyze how the algorithm sets the score of each cell, you would notice that the first row and column will always have scores of 0, so they are left as such. This optimizes my program for time._ 
+
+6. In `traceback()`, start from the cell with the highest score and follow the arrows until we reach a nonpositive score or a cell without an arrow, saving the nucleotides in `seq1` and `seq2`, or gaps (represented by `-`) in the case of horizontal/vertical movement as we go
 7. Since we started from the bottom right and went to the top left, reverse the saved sequences to get `align1=GT` and `align2=GT`
 8. In `set_alignment_score()`, set `alignment_score` to the score of the highest scoring cell, so `alignment_score = 2`
 
@@ -129,3 +133,4 @@ I will walk you through how this algorithm works step-by-step by using the same 
 
 * In `main.py`, `get_results()` uses the `combinations()` method of the `itertools` libary to get all combinations of two sequences from all the inputted sequences to run the global and local alignment algorithms on. It saves the set of outputs for each combination of sequences in the `results` table of `results.db` and prints them to the console if it's being run as a CLI tool.
 * In `app.py`, `home()` first connects to `results.db` and saves URL parameters about how to sort the table of results. Then, if the form has been submitted, it validates the inputs and runs `main.get_results()`. Next, whether the user has just navigated to the website or they have submitted the form, it gets all rows from `results` and sends them to be included in the HTML table using Jinja.
+* In `sequence_alignment.py`, my implementation of the `initalize_matrix()` method for global alignment sets the first row and column to multiples of the gap penalty and point those arrows towards the top left because, if you analyze how the algorithm sets the score of each cell, you would notice that this is the case for all possible inputs. This optimizes my program for time.
