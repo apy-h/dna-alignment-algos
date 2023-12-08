@@ -1,21 +1,89 @@
-# DNA Alignment
+# DNA Alignment: User's Manual
 
-A command-line interface program that enables biologists to score the similarity between two DNA sequences and view the aligned portions.
+## Overview
+I coded a program that enables biologists to score the similarity between DNA sequences and view the aligned portions. Given DNA sequences as [input](#input), the program [outputs](#output) a numerical and visual representation of their alignment.
 
+It does this by implementing two algorithms for DNA alignment: the [Needleman-Wunsch algorithm for global alignment](DESIGN.md#needleman-wunsch-algorithm-for-global-alignment) and the [Smith-Waterman algorithm for local alignment](DESIGN.md#smith-waterman-algorithm-for-local-alignment). I describe both in detail in the [algorithms](DESIGN.md#algorithms) section of my [design document](DESIGN.md). The main takeaways are that one can either try to align two DNA sequences over all their nucleotides using the Needleman-Wunsch algorithm or look for portions of the inputted sequences that are closely aligned using the Smith-Waterman algorithm.
 
-DDB
-ChatGPT
-GitHub Copilot
+After [getting ready to to test my code](#set-up), try out its two methods of use: its [graphical user interface (GUI)](#gui) or [command-line interface (CLI)](#cli). I describe how to use both in detail in their respective sections.
 
-This documentation is to be a user’s manual for your project. Though the structure of your documentation is entirely up to you, it should be incredibly clear to the staff how and where, if applicable, to compile, configure, and use your project. Your documentation should be at least several paragraphs in length. It should not be necessary for us to contact you with questions regarding your project after its submission. Hold our hand with this documentation; be sure to answer in your documentation any questions that you think we might have while testing your work.
+***
 
-Resources:
+## Input & Output
 
-[Smith–Waterman algorithm](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm)
+### Input
 
-[YouTube Video 1](https://www.youtube.com/watch?v=te_csPu5lmM)
+The user inputs two or more DNA sequences as their standard string representations, where `A` represents the nucleotide adenine, `T` represents thymine, `C` represents cytosine, and `G` represents guanine. For example, `GATTCGACGC` is a sample input  sequence with 10 nucleotides with two adenines, two thymines, three cytosines, and three guanines.
 
-[YouTube Video 2](https://www.youtube.com/watch?v=sSJYxzeFfWU)
-[YouTube Video 3](https://www.youtube.com/watch?v=of3B02hZGS0)
+Depending on how the user is interacting with the program, they will either seperate each input sequence with either a single space or a newline. If the user is uploading a file as input, it must have the `.CSV` extension (case insensitive) and have each sequence on a newline with no other seperators.
 
-Generative AI Use Disclaimer: CS50's duck debugger (DDB), ChatGPT, GitHub Copilot
+### Output
+
+Depending on the number of sequences the user inputs, the program will produce a different number of sets of outputs. The program produces one set of outputs for each combinations of two inputted sequences: for example, with `A`, `T`, and `C` as inputs, the combinations are {`A`, `T`}, {`A`, `C`}, and {`T`, `C`}, and each of the three combinations produces its own set of ouputs. Each set of outputs consists of the following:
+* **Global Alignment 1**: this is string representation of a DNA sequence, potentially with gaps (represented by hyphens, `-`).
+* **Global Alignment 2**: 
+* **Global Alignment Score**: 
+* **Local Alignment 1**: 
+* **Local Alignment 2**: 
+* **Local Alignment Score**: 
+
+***
+
+## Set-Up
+To prepare to test the program:
+1. Download the distribution code of the program
+2. Upload the distribution code to Visual Studio Code (VSCode) or [cs50.dev](https://cs50.dev/)
+3. Open a terminal window
+4. Navigate to the root directory of my project called `/dna-alignment` using `cd`
+5. Continue to the [GUI](#gui) or [CLI](#cli) section for instructions on how to use each respectively
+
+***
+
+## GUI
+
+I created a website for my program to make the user experience more pleasant. It enables people from non-technical backgrounds to use the program and easily visualize its.
+
+### Steps
+6. Run `flask run` in the terminal
+7. Click on the link that is printed to the console to navigate to the webpage, where you should see the words "DNA Alignment".
+8. Click on the "Manual Input" radio button and try out the test cases marked as "Manual" listed below
+9. Click on the "Upload CSV" file and try out the test case marked as "CSV" listed below
+
+### Test Cases
+
+***
+
+## CLI
+
+I initially intended for my program to only have a CLI and no GUI. The CLI is good for program testing purposes and a quicker processing time.
+
+### Steps
+6. Run `python3 main.py help`, `python3 main.py --help`, `python3 main.py h`, or `python3 main.py -h` in the terminal. This will output to the console instructions on how to use the program:
+```console
+~/dna-alignment$ python3 main.py help
+Usage:
+python3 main.py sequence1 sequence2  # Command-line inputs
+python3 main.py filename.csv         # CSV file input
+python3 main.py                      # Interactive inputs
+```
+7. Try out the test cases marked by "Command-Line" listed below
+8. Try out the test cases marked by "CSV" listed below
+9. Try out the test cases marked by "Interactive" listed below
+10. Try out the unit test cases marked by "Unit Tests" listed below
+
+### Test Cases
+
+***
+
+### Resources:
+* [Needleman-Wunsch Algorithm Wikipedia](https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm)
+* [Smith-Waterman Algorithm Wikipedia](https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm)
+* [Needleman-Wunsch Tool](https://bioboot.github.io/bimm143_W20/class-material/nw/)
+* [Smith-Waterman Tool](https://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman)
+* [Needleman-Wunsch Algorithm Video Walkthrough](https://www.youtube.com/watch?v=of3B02hZGS0)
+* [Smith-Waterman Algorithm Video Walkthrough 1](https://www.youtube.com/watch?v=te_csPu5lmM)
+* [Smith-Waterman Algorithm Video Walkthrough 2](https://www.youtube.com/watch?v=sSJYxzeFfWU)
+
+***
+
+**Generative AI Use Disclaimer**: I used CS50's Duck Debugger (DDB) and OpenAI's ChatGPT to help brainstorm ideas for my final project. I used ChatGPT to help teach me how the two algorithms work and write psuedocode for each. I used GitHub Copilot to help in the coding, testing, debugging, and commenting process.

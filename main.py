@@ -73,9 +73,9 @@ def cli_input():
 # Raise exception that provides input format
 def usage_help():
     raise SystemExit(f'Usage:\n'
-          f'{sys.argv[0]} sequence1 sequence2  # Command-line inputs\n'
-          f'{sys.argv[0]} filename.csv         # CSV file input\n'
-          f'{sys.argv[0]}                      # Interactive inputs')
+          f'python3 {sys.argv[0]} sequence1 sequence2  # Command-line inputs\n'
+          f'python3 {sys.argv[0]} filename.csv         # CSV file input\n'
+          f'python3 {sys.argv[0]}                      # Interactive inputs')
 
 
 # Create database connection and create results table if needed
