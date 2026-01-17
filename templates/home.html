@@ -12,13 +12,15 @@
     </head>
 
     <body>
-        <h1>Sequence Alignment</h1>
-        <h4>Enter your DNA sequences to perform global and local sequence alignment.</h4>
-        <br>
+        <main class="container">
+            <header class="page-header">
+                <h1>Sequence Alignment</h1>
+                <p class="subtitle">Enter your DNA sequences to perform global and local sequence alignment.</p>
+            </header>
 
         <!-- Show error message if less than 2 valid DNA sequences submitted -->
         {% if error %}
-            <p style="color: darkred;">{{ error }}</p>
+            <p class="alert" role="alert">{{ error }}</p>
         {% endif %}
 
         <!-- Loading screen overlay with image of spinning DNA and timer -->
@@ -31,29 +33,40 @@
         </div>
 
         <!-- Form for submitting DNA sequences -->
-        <form id="sequence-form" method="post" enctype="multipart/form-data">
-            <!-- Manual Input: type into multi-line input box -->
-            <input type="radio" id="manual" name="input_type" value="manual">
-            <label for="manual">Manual Input</label><br>
-            <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences seperated by newlines"></textarea><br>
+        <form id="sequence-form" method="post" enctype="multipart/form-data" class="card">
+            <div class="input-options">
+                <!-- Manual Input: type into multi-line input box -->
+                <div class="option">
+                    <input type="radio" id="manual" name="input_type" value="manual">
+                    <label for="manual">Manual Input</label>
+                </div>
 
-            <!-- Upload CSV -->
-            <input type="radio" id="csv" name="input_type" value="csv">
-            <label for="csv">Upload CSV</label><br>
-            <input type="file" id="csv-input" name="csv"><br>
+                <!-- Upload CSV -->
+                <div class="option">
+                    <input type="radio" id="csv" name="input_type" value="csv">
+                    <label for="csv">Upload CSV</label>
+                </div>
+            </div>
+
+            <div class="input-fields">
+                <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences separated by newlines"></textarea>
+                <input type="file" id="csv-input" name="csv" accept=".csv">
+            </div>
 
             <!-- Submit Button -->
-            <input type="submit" id="submit" value="Submit">
+            <div class="actions">
+                <input type="submit" id="submit" value="Submit" class="btn btn-primary">
+            </div>
         </form>
 
-        {% if rows %}            
-            <div id="table-controls">
+        {% if rows %}
+            <div id="table-controls" class="table-controls">
                 <!-- Button to download results.db -->
-                <a href="{{ url_for('download_results') }}" id="download-button" class="btn">Download Results</a>
+                <a href="{{ url_for('download_results') }}" id="download-button" class="btn btn-primary">Download Results</a>
 
                 <!-- Buttons to sort table -->
-                <div id="sort-controls">
-                    <h5>Sort By:</h5>
+                <div id="sort-controls" class="sort-controls">
+                    <h5>Sort By</h5>
                     <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order=ASC'">Global Score &#x25BC;</button>
                     <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order=DESC'">Global Score &#x25B2;</button>
                     <button class="sort-button" onclick="window.location.href = '/?sort_column=la_score&sort_order=ASC'">Local Score &#x25BC;</button>
@@ -64,26 +77,28 @@
             </div>
 
             <!-- Table representation of results.db -->
-            <table>
-                <tr>
-                    <th>Sequence 1</th>
-                    <th>Sequence 2</th>
-                    <th>Global Alignment 1</th>
-                    <th>Global Alignment 2</th>
-                    <th>Global Score</th>
-                    <th>Local Alignment 1</th>
-                    <th>Local Alignment 2</th>
-                    <th>Local Score</th>
-                    <th>Timestamp</th>
-                </tr>
-                {% for row in rows %}
-                <tr>
-                    {% for cell in row %}
-                        <td>{{ cell }}</td>
+            <div class="table-wrap">
+                <table>
+                    <tr>
+                        <th>Sequence 1</th>
+                        <th>Sequence 2</th>
+                        <th>Global Alignment 1</th>
+                        <th>Global Alignment 2</th>
+                        <th>Global Score</th>
+                        <th>Local Alignment 1</th>
+                        <th>Local Alignment 2</th>
+                        <th>Local Score</th>
+                        <th>Timestamp</th>
+                    </tr>
+                    {% for row in rows %}
+                    <tr>
+                        {% for cell in row %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </tr>
-                {% endfor %}
-            <table>
+                </table>
+            </div>
         {% endif %}
 
         <!-- JQuery -->
@@ -94,6 +109,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
         <script src="{{ url_for('static', filename='script.js') }}"></script>
+        </main>
     </body>
 
 </html>

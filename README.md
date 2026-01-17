@@ -1,7 +1,5 @@
 # DNA Alignment: User's Manual
 
-## [Video Walkthrough](https://youtu.be/xPMsahcAv24)
-
 ## Overview
 
 I coded a program that enables biologists to score the similarity between DNA sequences and view the aligned portions. Given DNA sequences as [input](#input), the program [outputs](#output) a numerical and visual representation of their alignment.
