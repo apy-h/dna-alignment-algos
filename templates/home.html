@@ -14,7 +14,13 @@
     <body>
         <main class="container">
             <header class="page-header">
-                <h1>Sequence Alignment</h1>
+                <div class="header-top">
+                    <div class="title-group">
+                        <img class="brand-logo" src="{{ url_for('static', filename='favicon.png') }}" data-light-src="{{ url_for('static', filename='favicon.png') }}" data-dark-src="{{ url_for('static', filename='favicon-white.png') }}" alt="DNA helix logo">
+                        <h1>Sequence Alignment</h1>
+                    </div>
+                    <button id="theme-toggle" class="icon-button" aria-label="Toggle theme" aria-pressed="false" title="Toggle theme">🌙</button>
+                </div>
                 <p class="subtitle">Enter your DNA sequences to perform global and local sequence alignment.</p>
             </header>
 

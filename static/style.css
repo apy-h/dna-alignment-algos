@@ -33,11 +33,23 @@ body {
     font-size: 32px;
     line-height: 1.2;
     font-weight: 700;
+    color: var(--text);
 }
 
 .page-header .subtitle {
     margin: 0 0 20px;
     color: var(--muted);
+}
+
+.page-header .header-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+.title-group { display: inline-flex; align-items: center; gap: 12px; }
+
+.brand-logo {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
 }
 
 .alert {
@@ -63,6 +75,7 @@ body {
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 12px;
+    background: var(--panel);
 }
 
 .option {
@@ -72,8 +85,24 @@ body {
     padding: 8px 10px;
     border: 1px solid var(--border);
     border-radius: 999px;
-    background: #fff;
+    background: var(--panel);
 }
+.option input[type="radio"] { margin: 0; }
+.option label {
+    color: var(--text);
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.2;
+}
+
+/* Nudge radios to vertically center with text across browsers */
+.option input[type="radio"] {
+    align-self: center;
+    vertical-align: middle;
+    transform: translateY(-1px);
+}
+.option label { color: var(--text); }
 
 .input-fields {
     display: grid;
@@ -89,7 +118,7 @@ textarea#manual-input {
     padding: 12px 14px;
     border: 1px solid var(--border);
     border-radius: 12px;
-    background: #fff;
+    background: var(--panel);
     resize: vertical;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: 14px;
@@ -101,8 +130,23 @@ input[type="file"]#csv-input {
     padding: 10px 12px;
     border: 1px dashed var(--border);
     border-radius: 12px;
-    background: #fff;
+    background: var(--panel);
 }
+
+/* Ensure radio controls fit theme */
+input[type="radio"] {
+    accent-color: var(--accent);
+}
+
+/* Extra specificity to defeat third‑party defaults in dark mode */
+form.card,
+.card,
+.input-options,
+.input-options .option {
+    background: var(--panel) !important;
+}
+
+.input-options label { color: var(--text); background: transparent; }
 
 .actions { margin-top: 6px; }
 
@@ -113,7 +157,7 @@ input[type="file"]#csv-input {
     padding: 10px 14px;
     border-radius: 12px;
     border: 1px solid var(--border);
-    background: #fff;
+    background: var(--panel);
     color: var(--text);
     cursor: pointer;
     text-decoration: none;
@@ -132,8 +176,24 @@ input[type="file"]#csv-input {
     background: linear-gradient(180deg, #1e40af, #1d4ed8);
 }
 
+.icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.icon-button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); background: var(--accent-weak); }
+
 .sort-button {
-    background: #fff;
+    background: var(--panel);
     color: var(--text);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -175,6 +235,7 @@ tr:nth-child(even) td { background: #fcfdff; }
 tr:hover td { background: #f1f5f9; }
 
 td {
+    color: var(--text);
     max-width: 28ch;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -215,3 +276,32 @@ td {
 
 #loading-spinner { width: 84px; height: 84px; animation: spin 1.2s linear infinite; }
 #timer { margin-top: 12px; color: var(--muted); font-weight: 600; }
+
+/* Dark theme variables */
+[data-theme="dark"] {
+    --bg: #0b1220;
+    --panel: #0f172a;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --border: #1f2937;
+    --accent: #60a5fa;
+    --accent-weak: rgba(96, 165, 250, 0.14);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] body {
+    background: radial-gradient(1200px 600px at 10% -10%, rgba(2, 6, 23, 0.6) 0%, rgba(2, 6, 23, 0) 60%),
+                radial-gradient(1000px 500px at 110% 10%, rgba(8, 51, 68, 0.5) 0%, rgba(8, 51, 68, 0) 60%),
+                var(--bg);
+}
+
+[data-theme="dark"] .btn { background: var(--panel); border-color: var(--border); color: var(--text); }
+[data-theme="dark"] .btn-primary { background: linear-gradient(180deg, #1d4ed8, #1e40af); border-color: #1e3a8a; }
+[data-theme="dark"] .sort-button { background: var(--panel); border-color: var(--border); color: var(--text); }
+[data-theme="dark"] .table-wrap { background: var(--panel); border-color: var(--border); }
+[data-theme="dark"] th { background: #0b1220; color: var(--muted); }
+[data-theme="dark"] tr:nth-child(even) td { background: #0c1426; }
+[data-theme="dark"] tr:hover td { background: #0e1a33; }
+[data-theme="dark"] .option { background: var(--panel); }
+[data-theme="dark"] textarea#manual-input, [data-theme="dark"] input[type="file"]#csv-input { background: var(--panel); color: var(--text); border-color: var(--border); }
+[data-theme="dark"] .icon-button { background: var(--panel); border-color: var(--border); }

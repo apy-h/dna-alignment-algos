@@ -124,7 +124,3 @@ Again, feel free to validate the exact outputs using the tools linked in the [re
 * [Needleman-Wunsch Algorithm Video Walkthrough](https://www.youtube.com/watch?v=of3B02hZGS0)
 * [Smith-Waterman Algorithm Video Walkthrough 1](https://www.youtube.com/watch?v=te_csPu5lmM)
 * [Smith-Waterman Algorithm Video Walkthrough 2](https://www.youtube.com/watch?v=sSJYxzeFfWU)
-
-***
-
-**Generative AI Use Disclaimer**: I used CS50's Duck Debugger (DDB) and OpenAI's ChatGPT to help brainstorm ideas for my final project. I used ChatGPT to help teach me how the two algorithms work and write psuedocode for each. I used GitHub Copilot to help in the coding, testing, debugging, and commenting process.

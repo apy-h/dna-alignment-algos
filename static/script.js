@@ -1,4 +1,40 @@
 $(document).ready(function() {
+    // Theme: initialize preference (localStorage -> system)
+    function applyTheme(theme) {
+        const isDark = theme === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        const $btn = $('#theme-toggle');
+        if ($btn.length) {
+            $btn.attr('aria-pressed', isDark);
+            $btn.text(isDark ? '☀️' : '🌙');
+            $btn.attr('title', isDark ? 'Switch to light' : 'Switch to dark');
+        }
+
+        // Swap logo source based on theme
+        const $logo = $('.brand-logo');
+        if ($logo.length) {
+            const lightSrc = $logo.data('light-src');
+            const darkSrc = $logo.data('dark-src');
+            $logo.attr('src', isDark ? darkSrc : lightSrc);
+        }
+    }
+
+    (function initTheme() {
+        var stored = localStorage.getItem('theme');
+        if (!stored) {
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            stored = prefersDark ? 'dark' : 'light';
+        }
+        applyTheme(stored);
+    })();
+
+    $('#theme-toggle').on('click', function() {
+        var current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        var next = current === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('theme', next);
+        applyTheme(next);
+    });
+
     // Show tooltip when hovering over cells with overflow
     $('td').each(function() {
         if (this.offsetWidth < this.scrollWidth) {
@@ -7,7 +43,7 @@ $(document).ready(function() {
         }
     });
     $('[data-toggle="tooltip"]').tooltip()
-    
+
     // Hide the manual and CSV input fields and the submit button initally
     hideInputs();
 
@@ -20,16 +56,16 @@ $(document).ready(function() {
     // Validate input field (manual or CSV) before enabling user to submit form
     $('input[type=radio][name=input_type], #manual-input, #csv-input').on('input change', function() {
         $('#submit').hide();
-    
+
         // Combine sequences across lines to check if all are valid (not empty and contains only A, C, G, and T) at once for manual input field
         if ($('#manual').is(':checked')) {
             var seqs = $('#manual-input').val()
             if (seqs && /^[ACGT]*$/i.test(seqs.replace(/\n/g, ''))) {
                 $('#submit').show();
             }
-        } 
+        }
         // Check if CSV file is valid for CSV input field
-        else if ($('#csv').is(':checked')) { 
+        else if ($('#csv').is(':checked')) {
             var file = $('#csv-input').get(0).files[0];
             if (file && $('#csv-input').get(0).files[0].type == 'text/csv') {
                 $('#submit').show();
@@ -46,7 +82,7 @@ $(document).ready(function() {
         startTime = Date.now();
         setInterval(updateTimer, 100); // Update every 0.1 seconds
     });
-    
+
     function updateTimer() {
         var elapsedSeconds = (Date.now() - startTime) / 1000;
         $('#timer').text(elapsedSeconds.toFixed(1) + ' seconds'); // Display 1 decimal place
