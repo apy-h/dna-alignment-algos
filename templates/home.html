@@ -24,88 +24,261 @@
                 <p class="subtitle">Enter your DNA sequences to perform global and local sequence alignment.</p>
             </header>
 
-        <!-- Show error message if less than 2 valid DNA sequences submitted -->
-        {% if error %}
-            <p class="alert" role="alert">{{ error }}</p>
-        {% endif %}
-
-        <!-- Loading screen overlay with image of spinning DNA and timer -->
-        <!-- Hide until dynamically shown (by pressing submit button) -->
-        <div id="loading" style="display: none;">
-            <div id="loading-content">
-                <img src="{{ url_for('static', filename='favicon.png') }}" id="loading-spinner">
-                <h5 id="timer">0 seconds</h5>
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="alignment">Alignment Tool</button>
+                <button class="tab-button" data-tab="documentation">Documentation</button>
             </div>
-        </div>
 
-        <!-- Form for submitting DNA sequences -->
-        <form id="sequence-form" method="post" enctype="multipart/form-data" class="card">
-            <div class="input-options">
-                <!-- Manual Input: type into multi-line input box -->
-                <div class="option">
-                    <input type="radio" id="manual" name="input_type" value="manual">
-                    <label for="manual">Manual Input</label>
+            <!-- Alignment Tool Tab -->
+            <div id="alignment-tab" class="tab-content active">
+                <!-- Show error message if less than 2 valid DNA sequences submitted -->
+                {% if error %}
+                    <p class="alert" role="alert">{{ error }}</p>
+                {% endif %}
+
+                <!-- Loading screen overlay with image of spinning DNA and timer -->
+                <!-- Hide until dynamically shown (by pressing submit button) -->
+                <div id="loading" style="display: none;">
+                    <div id="loading-content">
+                        <img src="{{ url_for('static', filename='favicon.png') }}" id="loading-spinner" data-light-src="{{ url_for('static', filename='favicon.png') }}" data-dark-src="{{ url_for('static', filename='favicon-white.png') }}" alt="Loading spinner">
+                        <p id="loading-text">loading...</p>
+                    </div>
                 </div>
 
-                <!-- Upload CSV -->
-                <div class="option">
-                    <input type="radio" id="csv" name="input_type" value="csv">
-                    <label for="csv">Upload CSV</label>
+                <!-- Form for submitting DNA sequences -->
+                <form id="sequence-form" method="post" enctype="multipart/form-data" class="card">
+                    <div class="input-options">
+                        <!-- Manual Input: type into multi-line input box -->
+                        <div class="option">
+                            <input type="radio" id="manual" name="input_type" value="manual">
+                            <label for="manual">Manual Input</label>
+                        </div>
+
+                        <!-- Upload CSV -->
+                        <div class="option">
+                            <input type="radio" id="csv" name="input_type" value="csv">
+                            <label for="csv">Upload CSV</label>
+                        </div>
+                    </div>
+
+                    <div class="input-fields">
+                        <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences separated by newlines"></textarea>
+                        <input type="file" id="csv-input" name="csv" accept=".csv">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="actions">
+                        <input type="submit" id="submit" value="Submit" class="btn btn-primary">
+                    </div>
+                </form>
+
+                {% if rows %}
+                    <div id="table-controls" class="table-controls">
+                        <!-- Export/Download Controls -->
+                        <div class="control-group">
+                            <a href="{{ url_for('download_results') }}" id="download-button" class="btn btn-primary">Export All (CSV)</a>
+                            <button id="export-selected-button" class="btn btn-secondary" disabled>Export Selected</button>
+                            <button id="export-unselected-button" class="btn btn-secondary" disabled>Export Unselected</button>
+                        </div>
+
+                        <!-- Database Management Controls -->
+                        <div class="control-group">
+                            <button id="clear-database-button" class="btn btn-danger">Clear Database</button>
+                            <button id="delete-selected-button" class="btn btn-danger" disabled>Delete Selected</button>
+                        </div>
+
+                        <!-- Sort Controls -->
+                        <div id="sort-controls" class="sort-controls">
+                            <h5>Sort By</h5>
+                            {% set next_ga_order = 'DESC' if sort_column == 'ga_score' and sort_order == 'ASC' else 'ASC' %}
+                            {% set next_la_order = 'DESC' if sort_column == 'la_score' and sort_order == 'ASC' else 'ASC' %}
+                            {% set next_time_order = 'DESC' if sort_column == 'time' and sort_order == 'ASC' else 'ASC' %}
+                            
+                            <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order={{ next_ga_order }}'">
+                                Global Score 
+                                {% if sort_column == 'ga_score' %}
+                                    {{ '&#x25B2;' if sort_order == 'ASC' else '&#x25BC;' }}
+                                {% else %}
+                                    &#x25BC;
+                                {% endif %}
+                            </button>
+                            <button class="sort-button" onclick="window.location.href = '/?sort_column=la_score&sort_order={{ next_la_order }}'">
+                                Local Score 
+                                {% if sort_column == 'la_score' %}
+                                    {{ '&#x25B2;' if sort_order == 'ASC' else '&#x25BC;' }}
+                                {% else %}
+                                    &#x25BC;
+                                {% endif %}
+                            </button>
+                            <button class="sort-button" onclick="window.location.href = '/?sort_column=time&sort_order={{ next_time_order }}'">
+                                Time 
+                                {% if sort_column == 'time' %}
+                                    {{ '&#x25B2;' if sort_order == 'ASC' else '&#x25BC;' }}
+                                {% else %}
+                                    &#x25BC;
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Selection Controls -->
+                    <div class="bulk-selection-controls">
+                        <button id="select-all-button" class="btn btn-sm">Select All</button>
+                        <button id="deselect-all-button" class="btn btn-sm">Deselect All</button>
+                        <span id="selection-count" class="selection-count">0 selected</span>
+                    </div>
+
+                    <!-- Table representation of results.db -->
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="select-all-checkbox" title="Select all"></th>
+                                    <th>Sequence 1</th>
+                                    <th>Sequence 2</th>
+                                    <th>Global Alignment 1</th>
+                                    <th>Global Alignment 2</th>
+                                    <th>Global Score</th>
+                                    <th>Local Alignment 1</th>
+                                    <th>Local Alignment 2</th>
+                                    <th>Local Score</th>
+                                    <th>Timestamp</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in rows %}
+                                <tr data-row-id="{{ row[0] }}">
+                                    <td><input type="checkbox" class="row-checkbox" data-row-id="{{ row[0] }}"></td>
+                                    {% for i in range(1, row|length) %}
+                                        <td>{{ row[i] }}</td>
+                                    {% endfor %}
+                                    <td>
+                                        <button class="delete-row-button icon-button-sm" data-row-id="{{ row[0] }}" title="Delete this row">🗑️</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Documentation Tab -->
+            <div id="documentation-tab" class="tab-content">
+                <div class="docs-content card">
+                    <h2>DNA Sequence Alignment Algorithms</h2>
+                    
+                    <section class="doc-section">
+                        <h3>Overview</h3>
+                        <p>This application implements two fundamental algorithms for DNA sequence alignment:</p>
+                        <ul>
+                            <li><strong>Needleman-Wunsch Algorithm</strong> - For global alignment</li>
+                            <li><strong>Smith-Waterman Algorithm</strong> - For local alignment</li>
+                        </ul>
+                        <p>These algorithms enable biologists to score the similarity between DNA sequences and view the aligned portions.</p>
+                    </section>
+
+                    <section class="doc-section">
+                        <h3>Needleman-Wunsch Algorithm (Global Alignment)</h3>
+                        <p>The Needleman-Wunsch algorithm aligns two DNA sequences over their entire length. Here's how it works:</p>
+                        <ol>
+                            <li>Create a matrix where nucleotides of sequence 1 are along the vertical axis and sequence 2 along the horizontal axis</li>
+                            <li>Initialize the first row and column with gap penalties (default: -2)</li>
+                            <li>Fill each cell with the maximum score from:
+                                <ul>
+                                    <li>Cell to the left + gap penalty (horizontal movement)</li>
+                                    <li>Cell above + gap penalty (vertical movement)</li>
+                                    <li>Diagonal cell + match reward (+1) or mismatch penalty (-1)</li>
+                                </ul>
+                            </li>
+                            <li>Traceback from the bottom-right cell to top-left, following the path that generated each score</li>
+                            <li>The alignment score is the value in the bottom-right cell</li>
+                        </ol>
+                        <p><strong>Use case:</strong> When you need to align entire sequences to compare overall similarity.</p>
+                    </section>
+
+                    <section class="doc-section">
+                        <h3>Smith-Waterman Algorithm (Local Alignment)</h3>
+                        <p>The Smith-Waterman algorithm finds the most similar subsequences within two DNA sequences:</p>
+                        <ol>
+                            <li>Create a matrix similar to Needleman-Wunsch</li>
+                            <li>Fill each cell with the maximum score from:
+                                <ul>
+                                    <li>Cell to the left + gap penalty</li>
+                                    <li>Cell above + gap penalty</li>
+                                    <li>Diagonal cell + match reward or mismatch penalty</li>
+                                    <li><strong>Zero (0)</strong> - allows alignment to start fresh</li>
+                                </ul>
+                            </li>
+                            <li>Traceback from the highest scoring cell until reaching zero or a cell with no direction</li>
+                            <li>The alignment score is the highest value in the entire matrix</li>
+                        </ol>
+                        <p><strong>Use case:</strong> When you need to find conserved regions or similar subsequences within larger DNA sequences.</p>
+                    </section>
+
+                    <section class="doc-section">
+                        <h3>Scoring Parameters</h3>
+                        <table class="param-table">
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <td>Match Score</td>
+                                <td>+1</td>
+                                <td>Reward for matching nucleotides</td>
+                            </tr>
+                            <tr>
+                                <td>Mismatch Penalty</td>
+                                <td>-1</td>
+                                <td>Penalty for non-matching nucleotides</td>
+                            </tr>
+                            <tr>
+                                <td>Gap Penalty</td>
+                                <td>-2</td>
+                                <td>Penalty for inserting a gap in alignment</td>
+                            </tr>
+                        </table>
+                    </section>
+
+                    <section class="doc-section">
+                        <h3>Input Format</h3>
+                        <p>DNA sequences should be provided as strings containing only the nucleotide letters:</p>
+                        <ul>
+                            <li><strong>A</strong> - Adenine</li>
+                            <li><strong>T</strong> - Thymine</li>
+                            <li><strong>C</strong> - Cytosine</li>
+                            <li><strong>G</strong> - Guanine</li>
+                        </ul>
+                        <p>The input is case-insensitive. Sequences can be entered manually (separated by newlines) or uploaded as a CSV file.</p>
+                    </section>
+
+                    <section class="doc-section">
+                        <h3>Output Explanation</h3>
+                        <p>For each pair of sequences, the application provides:</p>
+                        <ul>
+                            <li><strong>Global Alignment 1 & 2:</strong> The two sequences aligned over their entire length, with gaps (-) inserted for optimal alignment</li>
+                            <li><strong>Global Score:</strong> Integer score representing overall similarity (can be negative)</li>
+                            <li><strong>Local Alignment 1 & 2:</strong> The most similar subsequences from each sequence, aligned with gaps</li>
+                            <li><strong>Local Score:</strong> Positive integer representing the similarity of the aligned subsequences</li>
+                            <li><strong>Timestamp:</strong> When the alignment was computed</li>
+                        </ul>
+                    </section>
+
+                    <section class="doc-section">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm" target="_blank">Needleman-Wunsch Algorithm (Wikipedia)</a></li>
+                            <li><a href="https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm" target="_blank">Smith-Waterman Algorithm (Wikipedia)</a></li>
+                            <li><a href="https://bioboot.github.io/bimm143_W20/class-material/nw/" target="_blank">Needleman-Wunsch Online Tool</a></li>
+                            <li><a href="https://rna.informatik.uni-freiburg.de/Teaching/index.jsp?toolName=Smith-Waterman" target="_blank">Smith-Waterman Online Tool</a></li>
+                        </ul>
+                    </section>
                 </div>
             </div>
-
-            <div class="input-fields">
-                <textarea id="manual-input" name="sequences" placeholder="Enter 2+ DNA sequences separated by newlines"></textarea>
-                <input type="file" id="csv-input" name="csv" accept=".csv">
-            </div>
-
-            <!-- Submit Button -->
-            <div class="actions">
-                <input type="submit" id="submit" value="Submit" class="btn btn-primary">
-            </div>
-        </form>
-
-        {% if rows %}
-            <div id="table-controls" class="table-controls">
-                <!-- Button to download results.db -->
-                <a href="{{ url_for('download_results') }}" id="download-button" class="btn btn-primary">Download Results</a>
-
-                <!-- Buttons to sort table -->
-                <div id="sort-controls" class="sort-controls">
-                    <h5>Sort By</h5>
-                    <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order=ASC'">Global Score &#x25BC;</button>
-                    <button class="sort-button" onclick="window.location.href = '/?sort_column=ga_score&sort_order=DESC'">Global Score &#x25B2;</button>
-                    <button class="sort-button" onclick="window.location.href = '/?sort_column=la_score&sort_order=ASC'">Local Score &#x25BC;</button>
-                    <button class="sort-button" onclick="window.location.href = '/?sort_column=la_score&sort_order=DESC'">Local Score &#x25B2;</button>
-                    <button class="sort-button" onclick="window.location.href = '/?sort_column=time&sort_order=ASC'">Time &#x25BC;</button>
-                    <button class="sort-button" onclick="window.location.href = '/?sort_column=time&sort_order=DESC'">Time &#x25B2;</button>
-                </div>
-            </div>
-
-            <!-- Table representation of results.db -->
-            <div class="table-wrap">
-                <table>
-                    <tr>
-                        <th>Sequence 1</th>
-                        <th>Sequence 2</th>
-                        <th>Global Alignment 1</th>
-                        <th>Global Alignment 2</th>
-                        <th>Global Score</th>
-                        <th>Local Alignment 1</th>
-                        <th>Local Alignment 2</th>
-                        <th>Local Score</th>
-                        <th>Timestamp</th>
-                    </tr>
-                    {% for row in rows %}
-                    <tr>
-                        {% for cell in row %}
-                            <td>{{ cell }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        {% endif %}
 
         <!-- JQuery -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
