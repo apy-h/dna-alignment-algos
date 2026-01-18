@@ -35,6 +35,18 @@ $(document).ready(function() {
         applyTheme(next);
     });
 
+    // Tab switching
+    $('.tab-button').on('click', function() {
+        const tab = $(this).data('tab');
+        
+        // Update active states
+        $('.tab-button').removeClass('active');
+        $(this).addClass('active');
+        
+        $('.tab-content').removeClass('active');
+        $(`#${tab}-tab`).addClass('active');
+    });
+
     // Show tooltip when hovering over cells with overflow
     $('td').each(function() {
         if (this.offsetWidth < this.scrollWidth) {
@@ -42,9 +54,9 @@ $(document).ready(function() {
             $(this).attr('title', $(this).text());
         }
     });
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
 
-    // Hide the manual and CSV input fields and the submit button initally
+    // Hide the manual and CSV input fields and the submit button initially
     hideInputs();
 
     // Show appropriate input field (manual or CSV) when radio button is selected
@@ -77,20 +89,179 @@ $(document).ready(function() {
 
     // Show the loading spinner and start the timer when user presses submit
     $('#submit').click(function() {
+        // Update loading spinner based on current theme
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const spinnerSrc = isDark ? 
+            $('#loading-spinner').data('dark-src') : 
+            $('#loading-spinner').data('light-src');
+        $('#loading-spinner').attr('src', spinnerSrc);
+        
         $('#loading').show();
         $('#loading-spinner').css('animation', 'spin 2s linear infinite');
-        startTime = Date.now();
-        setInterval(updateTimer, 100); // Update every 0.1 seconds
     });
-
-    function updateTimer() {
-        var elapsedSeconds = (Date.now() - startTime) / 1000;
-        $('#timer').text(elapsedSeconds.toFixed(1) + ' seconds'); // Display 1 decimal place
-    }
 
     function hideInputs() {
         $('#manual-input').hide();
         $('#csv-input').hide();
         $('#submit').hide();
     }
+
+    // Bulk selection functionality
+    function updateSelectionCount() {
+        const count = $('.row-checkbox:checked').length;
+        $('#selection-count').text(`${count} selected`);
+        
+        // Enable/disable buttons based on selection
+        const hasSelection = count > 0;
+        $('#delete-selected-button').prop('disabled', !hasSelection);
+        $('#export-selected-button').prop('disabled', !hasSelection);
+        $('#export-unselected-button').prop('disabled', !hasSelection);
+    }
+
+    // Select all checkbox
+    $('#select-all-checkbox').on('change', function() {
+        $('.row-checkbox').prop('checked', this.checked);
+        updateSelectionCount();
+    });
+
+    // Individual row checkboxes
+    $(document).on('change', '.row-checkbox', function() {
+        updateSelectionCount();
+        
+        // Update select-all checkbox state
+        const total = $('.row-checkbox').length;
+        const checked = $('.row-checkbox:checked').length;
+        $('#select-all-checkbox').prop('checked', total === checked);
+    });
+
+    // Select all button
+    $('#select-all-button').on('click', function() {
+        $('.row-checkbox').prop('checked', true);
+        $('#select-all-checkbox').prop('checked', true);
+        updateSelectionCount();
+    });
+
+    // Deselect all button
+    $('#deselect-all-button').on('click', function() {
+        $('.row-checkbox').prop('checked', false);
+        $('#select-all-checkbox').prop('checked', false);
+        updateSelectionCount();
+    });
+
+    // Delete single row
+    $(document).on('click', '.delete-row-button', function() {
+        const rowId = $(this).data('row-id');
+        
+        if (confirm('Are you sure you want to delete this row?')) {
+            $.ajax({
+                url: `/delete_row/${rowId}`,
+                method: 'POST',
+                success: function() {
+                    location.reload();
+                },
+                error: function() {
+                    alert('Error deleting row');
+                }
+            });
+        }
+    });
+
+    // Delete selected rows
+    $('#delete-selected-button').on('click', function() {
+        const selectedIds = $('.row-checkbox:checked').map(function() {
+            return $(this).data('row-id');
+        }).get();
+        
+        const count = selectedIds.length;
+        if (confirm(`Delete ${count} selected item${count !== 1 ? 's' : ''}?`)) {
+            $.ajax({
+                url: '/delete_selected',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ rowIds: selectedIds }),
+                success: function() {
+                    location.reload();
+                },
+                error: function() {
+                    alert('Error deleting selected rows');
+                }
+            });
+        }
+    });
+
+    // Clear database
+    $('#clear-database-button').on('click', function() {
+        if (confirm('Are you sure you want to clear the entire database? This action cannot be undone.')) {
+            $.ajax({
+                url: '/clear_database',
+                method: 'POST',
+                success: function() {
+                    location.reload();
+                },
+                error: function() {
+                    alert('Error clearing database');
+                }
+            });
+        }
+    });
+
+    // Export selected
+    $('#export-selected-button').on('click', function() {
+        const selectedIds = $('.row-checkbox:checked').map(function() {
+            return $(this).data('row-id');
+        }).get();
+        
+        $.ajax({
+            url: '/download_selected',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ rowIds: selectedIds }),
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(blob) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'selected_results.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            },
+            error: function() {
+                alert('Error exporting selected rows');
+            }
+        });
+    });
+
+    // Export unselected
+    $('#export-unselected-button').on('click', function() {
+        const selectedIds = $('.row-checkbox:checked').map(function() {
+            return $(this).data('row-id');
+        }).get();
+        
+        $.ajax({
+            url: '/download_except_selected',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ rowIds: selectedIds }),
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(blob) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'unselected_results.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            },
+            error: function() {
+                alert('Error exporting unselected rows');
+            }
+        });
+    });
 });
