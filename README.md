@@ -34,7 +34,7 @@ Depending on the number of sequences the user inputs, the program will produce a
 
 To prepare to test the program:
 1. Download the distribution code of the program
-2. Upload the distribution code to Visual Studio Code (VSCode) or [cs50.dev](https://cs50.dev/)
+2. Upload the distribution code to Visual Studio Code (VSCode).
 3. Open a terminal window
 4. Navigate to the root directory of my project called `/dna-alignment` using `cd`
 5. Continue to the [GUI](#gui) or [CLI](#cli) section for instructions on how to use each respectively
