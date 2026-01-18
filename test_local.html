@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <style>
+        .tab-button { cursor: pointer; padding: 10px; }
+        .tab-button.active { font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <button class="tab-button active" onclick="switchTab('tab1')">Tab 1</button>
+    <button class="tab-button" onclick="switchTab('tab2')">Tab 2</button>
+    <div id="tab1" class="tab-content active">Tab 1 Content</div>
+    <div id="tab2" class="tab-content">Tab 2 Content</div>
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+    </script>
+</body>
+</html>

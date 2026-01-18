@@ -54,7 +54,7 @@ $(document).ready(function() {
             $(this).attr('title', $(this).text());
         }
     });
-    $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip();
 
     // Hide the manual and CSV input fields and the submit button initially
     hideInputs();
